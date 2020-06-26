@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # BigFileMultiUpload
 
 [![CI Status](https://img.shields.io/travis/droudrou@hotmail.com/BigFileMultiUpload.svg?style=flat)](https://travis-ci.org/droudrou@hotmail.com/BigFileMultiUpload)
@@ -28,7 +27,4 @@ droudrou@hotmail.com, yinzhao@newscctv.cn
 ## License
 
 BigFileMultiUpload is available under the MIT license. See the LICENSE file for more info.
-=======
-# BigFileMutiUploadiOS
-iOS 大文件上传
->>>>>>> 5f66ea0aa5c70bcc0197f385e6a3c8ebd28b6e05
+
