@@ -114,21 +114,25 @@
 		A6A49734BE2CA7A10109D9A0F6E79AAA /* SPTTestSuite.h in Headers */ = {isa = PBXBuildFile; fileRef = 46F26604AD4A38EF911B54B74ECABFC5 /* SPTTestSuite.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AA446FB624A5E2AE00182DFD /* UUPSlicedItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FA524A5E2AD00182DFD /* UUPSlicedItem.m */; };
 		AA446FB724A5E2AE00182DFD /* UUPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FA624A5E2AD00182DFD /* UUPManager.m */; };
-		AA446FB824A5E2AE00182DFD /* UUPConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FA724A5E2AD00182DFD /* UUPConfig.h */; };
+		AA446FB824A5E2AE00182DFD /* UUPConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FA724A5E2AD00182DFD /* UUPConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AA446FB924A5E2AE00182DFD /* UUPHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FA824A5E2AD00182DFD /* UUPHeader.h */; };
 		AA446FBA24A5E2AE00182DFD /* UUPConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FA924A5E2AD00182DFD /* UUPConfig.m */; };
 		AA446FBB24A5E2AE00182DFD /* UUPReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FAA24A5E2AD00182DFD /* UUPReceiver.h */; };
 		AA446FBC24A5E2AE00182DFD /* UUPSliced.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FAB24A5E2AD00182DFD /* UUPSliced.h */; };
 		AA446FBD24A5E2AE00182DFD /* UUPSlicedItem.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FAC24A5E2AD00182DFD /* UUPSlicedItem.h */; };
-		AA446FBE24A5E2AE00182DFD /* UUPItf.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FAD24A5E2AD00182DFD /* UUPItf.h */; };
+		AA446FBE24A5E2AE00182DFD /* UUPItf.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FAD24A5E2AD00182DFD /* UUPItf.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AA446FBF24A5E2AE00182DFD /* UUPReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FAE24A5E2AD00182DFD /* UUPReceiver.m */; };
-		AA446FC024A5E2AE00182DFD /* UUPItem.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FAF24A5E2AD00182DFD /* UUPItem.h */; };
-		AA446FC124A5E2AE00182DFD /* UUPItf.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FB024A5E2AD00182DFD /* UUPItf.m */; };
+		AA446FC024A5E2AE00182DFD /* UUPItem.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FAF24A5E2AD00182DFD /* UUPItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AA446FC224A5E2AE00182DFD /* UUPSliced.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FB124A5E2AE00182DFD /* UUPSliced.m */; };
 		AA446FC324A5E2AE00182DFD /* UUPItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FB224A5E2AE00182DFD /* UUPItem.m */; };
 		AA446FC424A5E2AE00182DFD /* UUPUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FB324A5E2AE00182DFD /* UUPUtil.h */; };
 		AA446FC524A5E2AE00182DFD /* UUPUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FB424A5E2AE00182DFD /* UUPUtil.m */; };
-		AA446FC624A5E2AE00182DFD /* UUPManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FB524A5E2AE00182DFD /* UUPManager.h */; };
+		AA446FC624A5E2AE00182DFD /* UUPManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FB524A5E2AE00182DFD /* UUPManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AA446FC924A5E36200182DFD /* UUPItemType.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FC724A5E36200182DFD /* UUPItemType.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AA446FD524A988C300182DFD /* UUPItemProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FD324A988C300182DFD /* UUPItemProxy.h */; };
+		AA446FD624A988C300182DFD /* UUPItemProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FD424A988C300182DFD /* UUPItemProxy.m */; };
+		AA446FD924AAD45200182DFD /* UUPItem+Protected.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FD724AAD45200182DFD /* UUPItem+Protected.h */; };
+		AA446FDA24AAD45200182DFD /* UUPItem+Protected.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FD824AAD45200182DFD /* UUPItem+Protected.m */; };
 		ACBDE7479CEDFD9F3261E26D6B1015FC /* EXPMatchers+haveCountOf.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B587F705BFFCCBD0E65FA3DAF35FA1D /* EXPMatchers+haveCountOf.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AD96736DFA1A1A28B31F13E7818FCFE2 /* UIImage+Snapshot.h in Headers */ = {isa = PBXBuildFile; fileRef = E19D7F91877074DF27F99640EC532352 /* UIImage+Snapshot.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		ADC88A4EE6896AE4E6412F0128AB38C5 /* SPTExampleGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = F094E0D0E122398BEE05F02377D96CC1 /* SPTExampleGroup.m */; };
@@ -383,12 +387,16 @@
 		AA446FAD24A5E2AD00182DFD /* UUPItf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UUPItf.h; path = BigFileMultiUpload/Classes/UUPItf.h; sourceTree = "<group>"; };
 		AA446FAE24A5E2AD00182DFD /* UUPReceiver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UUPReceiver.m; path = BigFileMultiUpload/Classes/UUPReceiver.m; sourceTree = "<group>"; };
 		AA446FAF24A5E2AD00182DFD /* UUPItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UUPItem.h; path = BigFileMultiUpload/Classes/UUPItem.h; sourceTree = "<group>"; };
-		AA446FB024A5E2AD00182DFD /* UUPItf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UUPItf.m; path = BigFileMultiUpload/Classes/UUPItf.m; sourceTree = "<group>"; };
 		AA446FB124A5E2AE00182DFD /* UUPSliced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UUPSliced.m; path = BigFileMultiUpload/Classes/UUPSliced.m; sourceTree = "<group>"; };
 		AA446FB224A5E2AE00182DFD /* UUPItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UUPItem.m; path = BigFileMultiUpload/Classes/UUPItem.m; sourceTree = "<group>"; };
 		AA446FB324A5E2AE00182DFD /* UUPUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UUPUtil.h; path = BigFileMultiUpload/Classes/UUPUtil.h; sourceTree = "<group>"; };
 		AA446FB424A5E2AE00182DFD /* UUPUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UUPUtil.m; path = BigFileMultiUpload/Classes/UUPUtil.m; sourceTree = "<group>"; };
 		AA446FB524A5E2AE00182DFD /* UUPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UUPManager.h; path = BigFileMultiUpload/Classes/UUPManager.h; sourceTree = "<group>"; };
+		AA446FC724A5E36200182DFD /* UUPItemType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UUPItemType.h; path = BigFileMultiUpload/Classes/UUPItemType.h; sourceTree = "<group>"; };
+		AA446FD324A988C300182DFD /* UUPItemProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UUPItemProxy.h; sourceTree = "<group>"; };
+		AA446FD424A988C300182DFD /* UUPItemProxy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UUPItemProxy.m; sourceTree = "<group>"; };
+		AA446FD724AAD45200182DFD /* UUPItem+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UUPItem+Protected.h"; sourceTree = "<group>"; };
+		AA446FD824AAD45200182DFD /* UUPItem+Protected.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UUPItem+Protected.m"; sourceTree = "<group>"; };
 		AC81CDCDA674C72343F33170829E3264 /* ExpectaObject+FBSnapshotTest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ExpectaObject+FBSnapshotTest.m"; sourceTree = "<group>"; };
 		ACF27369267FC1FE4138662A11DF8F47 /* Expecta.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Expecta.release.xcconfig; sourceTree = "<group>"; };
 		ADB8A0F0B2B83940D30D63AF2BDBA119 /* EXPBlockDefinedMatcher.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXPBlockDefinedMatcher.m; path = Expecta/EXPBlockDefinedMatcher.m; sourceTree = "<group>"; };
@@ -834,8 +842,8 @@
 				AA446FA824A5E2AD00182DFD /* UUPHeader.h */,
 				AA446FAF24A5E2AD00182DFD /* UUPItem.h */,
 				AA446FB224A5E2AE00182DFD /* UUPItem.m */,
+				AA446FC724A5E36200182DFD /* UUPItemType.h */,
 				AA446FAD24A5E2AD00182DFD /* UUPItf.h */,
-				AA446FB024A5E2AD00182DFD /* UUPItf.m */,
 				AA446FB524A5E2AE00182DFD /* UUPManager.h */,
 				AA446FA624A5E2AD00182DFD /* UUPManager.m */,
 				AA446FAA24A5E2AD00182DFD /* UUPReceiver.h */,
@@ -849,6 +857,10 @@
 				E2CC0A0ABB6A850577D00619CC466563 /* BigFileMultiUpload.podspec */,
 				048EDF4833A8F0CA708E7DFD3171EE2A /* LICENSE */,
 				48C366C06EB3F9684DC614E13B8CA7E8 /* README.md */,
+				AA446FD324A988C300182DFD /* UUPItemProxy.h */,
+				AA446FD424A988C300182DFD /* UUPItemProxy.m */,
+				AA446FD724AAD45200182DFD /* UUPItem+Protected.h */,
+				AA446FD824AAD45200182DFD /* UUPItem+Protected.m */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -1013,16 +1025,19 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA446FBE24A5E2AE00182DFD /* UUPItf.h in Headers */,
 				AA446FB924A5E2AE00182DFD /* UUPHeader.h in Headers */,
+				AA446FC024A5E2AE00182DFD /* UUPItem.h in Headers */,
+				AA446FC924A5E36200182DFD /* UUPItemType.h in Headers */,
+				AA446FD524A988C300182DFD /* UUPItemProxy.h in Headers */,
+				AA446FB824A5E2AE00182DFD /* UUPConfig.h in Headers */,
+				AA446FC624A5E2AE00182DFD /* UUPManager.h in Headers */,
 				AA446FC424A5E2AE00182DFD /* UUPUtil.h in Headers */,
 				88A38289D8F88B839A3116DA6D9F8BCC /* BigFileMultiUpload-umbrella.h in Headers */,
-				AA446FC024A5E2AE00182DFD /* UUPItem.h in Headers */,
-				AA446FBE24A5E2AE00182DFD /* UUPItf.h in Headers */,
 				AA446FBD24A5E2AE00182DFD /* UUPSlicedItem.h in Headers */,
 				AA446FBC24A5E2AE00182DFD /* UUPSliced.h in Headers */,
+				AA446FD924AAD45200182DFD /* UUPItem+Protected.h in Headers */,
 				AA446FBB24A5E2AE00182DFD /* UUPReceiver.h in Headers */,
-				AA446FC624A5E2AE00182DFD /* UUPManager.h in Headers */,
-				AA446FB824A5E2AE00182DFD /* UUPConfig.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1274,12 +1289,13 @@
 			files = (
 				AA446FB724A5E2AE00182DFD /* UUPManager.m in Sources */,
 				AA446FC324A5E2AE00182DFD /* UUPItem.m in Sources */,
-				AA446FC124A5E2AE00182DFD /* UUPItf.m in Sources */,
 				AA446FB624A5E2AE00182DFD /* UUPSlicedItem.m in Sources */,
+				AA446FD624A988C300182DFD /* UUPItemProxy.m in Sources */,
 				AA446FC224A5E2AE00182DFD /* UUPSliced.m in Sources */,
 				AA446FC524A5E2AE00182DFD /* UUPUtil.m in Sources */,
 				AA446FBA24A5E2AE00182DFD /* UUPConfig.m in Sources */,
 				7DDAB12DCC05FCECDDC10492D7C17A48 /* BigFileMultiUpload-dummy.m in Sources */,
+				AA446FDA24AAD45200182DFD /* UUPItem+Protected.m in Sources */,
 				AA446FBF24A5E2AE00182DFD /* UUPReceiver.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1452,7 +1468,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/BigFileMultiUpload/BigFileMultiUpload-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/BigFileMultiUpload/BigFileMultiUpload-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/BigFileMultiUpload/BigFileMultiUpload.modulemap";
 				PRODUCT_MODULE_NAME = BigFileMultiUpload;
@@ -1897,7 +1913,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/BigFileMultiUpload/BigFileMultiUpload-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/BigFileMultiUpload/BigFileMultiUpload-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/BigFileMultiUpload/BigFileMultiUpload.modulemap";
 				PRODUCT_MODULE_NAME = BigFileMultiUpload;

@@ -12,4 +12,7 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
+- (void)showErrorWithTitle:(NSString*)str;
++ (UUPAppDelegate*)appDelegate;
+
 @end

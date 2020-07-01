@@ -43,4 +43,12 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (void)showErrorWithTitle:(NSString*)str{
+    
+}
+
++ (UUPAppDelegate*)appDelegate{
+    return (UUPAppDelegate *) [UIApplication sharedApplication].delegate;
+}
+
 @end

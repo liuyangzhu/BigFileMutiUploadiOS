@@ -10,6 +10,11 @@
 #endif
 #endif
 
+#import "UUPManager.h"
+#import "UUPConfig.h"
+#import "UUPItem.h"
+#import "UUPItemType.h"
+#import "UUPItf.h"
 
 FOUNDATION_EXPORT double BigFileMultiUploadVersionNumber;
 FOUNDATION_EXPORT const unsigned char BigFileMultiUploadVersionString[];

@@ -6,7 +6,10 @@
 //
 
 #import "UUPSlicedItem.h"
+#import "UUPHeader.h"
 
 @implementation UUPSlicedItem
-
+- (void)dealloc{
+    UUPLogRetainCountO(@"UUPSlicedItem_dealloc",self);
+}
 @end

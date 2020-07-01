@@ -39,7 +39,7 @@
 /* Begin PBXFileReference section */
 		0C5C0823840B7D6788537E96 /* Pods-BigFileMultiUpload_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BigFileMultiUpload_Tests.debug.xcconfig"; path = "Target Support Files/Pods-BigFileMultiUpload_Tests/Pods-BigFileMultiUpload_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		25263CB26185BA958BE8FB54 /* Pods_BigFileMultiUpload_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BigFileMultiUpload_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6003450F2FD6216FEDE891C4 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		6003450F2FD6216FEDE891C4 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* BigFileMultiUpload_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BigFileMultiUpload_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -60,10 +60,10 @@
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		75BE7EA6D8ACAABFA354F716 /* BigFileMultiUpload.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = BigFileMultiUpload.podspec; path = ../BigFileMultiUpload.podspec; sourceTree = "<group>"; };
+		75BE7EA6D8ACAABFA354F716 /* BigFileMultiUpload.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = BigFileMultiUpload.podspec; path = ../BigFileMultiUpload.podspec; sourceTree = "<group>"; };
 		8186DD3D192D280F6F1CF990 /* Pods-BigFileMultiUpload_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BigFileMultiUpload_Example.debug.xcconfig"; path = "Target Support Files/Pods-BigFileMultiUpload_Example/Pods-BigFileMultiUpload_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		AAA32F4097E9D2ADB3637011 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		AAA32F4097E9D2ADB3637011 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		E4EB7AEBA0500938DCCA2885 /* Pods-BigFileMultiUpload_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BigFileMultiUpload_Example.release.xcconfig"; path = "Target Support Files/Pods-BigFileMultiUpload_Example/Pods-BigFileMultiUpload_Example.release.xcconfig"; sourceTree = "<group>"; };
 		E8EAD7372DE5D062DB051549 /* Pods_BigFileMultiUpload_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BigFileMultiUpload_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD72F7DF273F102F28FB47B6 /* Pods-BigFileMultiUpload_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BigFileMultiUpload_Tests.release.xcconfig"; path = "Target Support Files/Pods-BigFileMultiUpload_Tests/Pods-BigFileMultiUpload_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -193,7 +193,6 @@
 				0C5C0823840B7D6788537E96 /* Pods-BigFileMultiUpload_Tests.debug.xcconfig */,
 				FD72F7DF273F102F28FB47B6 /* Pods-BigFileMultiUpload_Tests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -249,6 +248,9 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "droudrou@hotmail.com";
 				TargetAttributes = {
+					6003F589195388D20070C39A = {
+						DevelopmentTeam = 4WH5EL7YFQ;
+					};
 					6003F5AD195388D20070C39A = {
 						TestTargetID = 6003F589195388D20070C39A;
 					};
@@ -259,6 +261,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -519,6 +522,7 @@
 			baseConfigurationReference = 8186DD3D192D280F6F1CF990 /* Pods-BigFileMultiUpload_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 4WH5EL7YFQ;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "BigFileMultiUpload/BigFileMultiUpload-Prefix.pch";
 				INFOPLIST_FILE = "BigFileMultiUpload/BigFileMultiUpload-Info.plist";
@@ -535,6 +539,7 @@
 			baseConfigurationReference = E4EB7AEBA0500938DCCA2885 /* Pods-BigFileMultiUpload_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 4WH5EL7YFQ;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "BigFileMultiUpload/BigFileMultiUpload-Prefix.pch";
 				INFOPLIST_FILE = "BigFileMultiUpload/BigFileMultiUpload-Info.plist";
