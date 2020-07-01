@@ -21,14 +21,14 @@ Pod::Spec.new do |s|
 TODO: Add long description of the pod here.
                        DESC
 
-  s.homepage         = 'https://github.com/droudrou@hotmail.com/BigFileMultiUpload'
+  s.homepage         = 'https://github.com/amorYin/BigFileMutiUploadiOS'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'droudrou@hotmail.com' => 'yinzhao@newscctv.cn' }
-  s.source           = { :git => 'https://github.com/droudrou@hotmail.com/BigFileMultiUpload.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/amorYin/BigFileMutiUploadiOS.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 
   s.source_files = 'BigFileMultiUpload/Classes/**/*'
   

@@ -22,7 +22,7 @@ pod 'BigFileMultiUpload'
 
 ## Author
 
-droudrou@hotmail.com, yinzhao@newscctv.cn
+droudrou@hotmail.com
 
 ## License
 
