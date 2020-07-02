@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'BigFileMultiUpload'
-  s.version          = 'v0.2.0'
+  s.version          = '0.3.0'
   s.summary          = 'A short description of BigFileMultiUpload.'
 
 # This description is used to generate tags and improve search results.
@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'droudrou@hotmail.com' => 'yinzhao@newscctv.cn' }
-  s.source           = { :git => 'https://github.com/amorYin/BigFileMutiUploadiOS.git', :tag => s.version }
+  s.source           = { :git => 'https://github.com/amorYin/BigFileMutiUploadiOS.git', :tag => s.version.to_S }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '9.0'

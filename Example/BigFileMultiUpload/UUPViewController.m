@@ -31,6 +31,8 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
 @property (weak, nonatomic) IBOutlet UILabel *text2;
 @property (weak, nonatomic) IBOutlet UILabel *text3;
 @property (weak, nonatomic) IBOutlet UILabel *text4;
+@property (weak, nonatomic) IBOutlet UILabel *text5;
+@property (weak, nonatomic) IBOutlet UILabel *text6;
 @end
 
 @implementation UUPViewController
@@ -219,6 +221,11 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
 
 - (void)onUPError:(nonnull UUPItem *)item {
     NSLog(@"onUPProgress UUPItem Error:%ld",item.mError);
+    __weak typeof(self) weakSelf = self;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+            __strong typeof(weakSelf) strongSelf = weakSelf;
+        strongSelf.text6.text = [NSString stringWithFormat:@"%lu",(unsigned long)item.mError];
+    });
 }
 
 - (void)onUPFinish:(nonnull UUPItem *)item {
@@ -237,12 +244,13 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
 - (void)onUPProgress:(nonnull UUPItem *)item {
     NSLog(@"onUPProgress UUPItem Progress:%f",item.mProgress);
      __weak typeof(self) weakSelf = self;
-     dispatch_sync(dispatch_get_main_queue(), ^{
+     dispatch_async(dispatch_get_main_queue(), ^{
              __strong typeof(weakSelf) strongSelf = weakSelf;
          strongSelf.text2.text = [NSString stringWithFormat:@"上传进度：%.2f%%",item.mProgress * 100];
          strongSelf.text3.text = @"上传中";
          NSTimeInterval yu = [[NSDate date] timeIntervalSince1970];
          strongSelf.text4.text = [NSString stringWithFormat:@"用时：%.0f秒",yu -lastTime];
+         strongSelf.text5.text = item.mSpeedStr;
      });
 }
 

@@ -30,6 +30,7 @@
 @property(nonatomic,assign) BOOL ismValidateing;
 @property(nonatomic,assign) float mPProgress;
 @property(nonatomic,assign) float mLastProgress;
+@property(nonatomic,assign) int lowTimes;
 @property(nonatomic,strong) NSString* mUploadFileName;
 @property(nonatomic,strong) NSTimer* mSpeedTimer;
 @property(nonatomic,strong) NSString* mFUID;
@@ -51,6 +52,7 @@
         self.mContentUri = path;
         self.mType = type;
         self.mSpeed = 0.0;
+        self.mSpeedStr = @"0B/s";
         self.mProgress = 0.0;
         self.mPProgress = 0.0;
         self.mLastProgress = 0.0;
@@ -102,11 +104,13 @@
 
         if(_mTask != nil && _mTask.state == NSURLSessionTaskStateSuspended){
             [_mTask resume];
+            [self _calculateSpeed];
         }else if(self.mFUID == nil){//不作处理
             [self _getFuid];
         }else{
            [self.mSession finishTasksAndInvalidate];
            [self _next];
+           [self _calculateSpeed];
         }
         [self willChangeValueForKey:@"isExecuting"];
         _ismStartting = true;
@@ -152,11 +156,13 @@
            }else{
                if(_mTask != nil && _mTask.state == NSURLSessionTaskStateSuspended){
                    [_mTask resume];
+                   [self _calculateSpeed];
                }else if(self.mFUID == nil){//不作处理
                    [self _getFuid];
                }else{
                    [self.mSession finishTasksAndInvalidate];
                    [self _next];
+                   [self _calculateSpeed];
                }
            }
        }
@@ -428,12 +434,40 @@
 }
 
 - (void)_timerRun:(NSTimer*)timer{
-    UUPLog(@"%@",timer);
+    double tem = (_mProgress - _mLastProgress) * _mSize;
+    _mSpeed = [[NSNumber numberWithDouble:tem] longValue];
+    _mSpeed = fabsl(_mSpeed);
+    _mSpeedStr = [UUPUtil calculateSpeed:_mSpeed];
+    _mLastProgress = _mProgress;
+    [self sendMessageType:RUN_PROSESS];
+    UUPLog(@"UUPItem_timerRun:%@---%f---%f",_mSpeedStr,_mSpeed,tem);
     
+    if(_lowTimes >= 10 && _lowTimes % 10 == 0 ){
+        if(_mError != LOW_NET){
+            _mError = LOW_NET;
+            [self sendMessageType:RUN_ERROR];
+        }
+    }
+    
+    if(_lowTimes < 10){
+        if(_mError == LOW_NET){
+            _mError = NONE;
+        }
+    }
+    
+    if (_mSpeed < 10) {
+        _lowTimes ++;
+    }else{
+        _lowTimes = 0;
+    }
 }
 
 - (void)dealloc{
     UUPLogRetainCount(@"UUPItem_dealloc")
+    if(_mSpeedTimer != nil){
+        [_mSpeedTimer invalidate];
+        _mSpeedTimer = nil;
+    }
     _mDelegate = nil;
     [self.mSession finishTasksAndInvalidate];
     _mReceiver = nil;
