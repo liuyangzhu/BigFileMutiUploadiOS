@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_preStart;
 - (void)_next;
 - (void)_finish;
+- (void)_getFuid;
 - (void)sendMessageType:(UUPItemRunType)tag;
 @end
 

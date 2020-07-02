@@ -23,8 +23,14 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
 @interface UUPViewController ()<UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,UUPItf>
 {
     CNChooseMediaType mediaType;
+    BOOL isFirstUpload;
+    NSTimeInterval lastTime;
 }
 @property(nonatomic,strong)UIActionSheet *imgPickSheet;
+@property (weak, nonatomic) IBOutlet UILabel *text1;
+@property (weak, nonatomic) IBOutlet UILabel *text2;
+@property (weak, nonatomic) IBOutlet UILabel *text3;
+@property (weak, nonatomic) IBOutlet UILabel *text4;
 @end
 
 @implementation UUPViewController
@@ -195,6 +201,21 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
     config.fuidURi = @"https://upload.newscctv.net/2.64/ugc/init_chunk_upload.php";
     return config;
 }
+- (void)onUPStart:(nonnull UUPItem *)item {
+    NSLog(@"onUPStart UUPItem:%ld",item.mError);
+    __weak typeof(self) weakSelf = self;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+            __strong typeof(weakSelf) strongSelf = weakSelf;
+        strongSelf.text1.text = [NSString stringWithFormat:@"%@【%@】",item.mDisplayName,item.mSizeStr];
+        if(!strongSelf->isFirstUpload){
+            strongSelf->lastTime = [[NSDate date] timeIntervalSince1970];
+            strongSelf->isFirstUpload = true;
+            strongSelf.text3.text = @"准备上传";
+            strongSelf.text4.text = @"用时：0秒";
+        }
+    });
+    
+}
 
 - (void)onUPError:(nonnull UUPItem *)item {
     NSLog(@"onUPProgress UUPItem Error:%ld",item.mError);
@@ -202,10 +223,27 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
 
 - (void)onUPFinish:(nonnull UUPItem *)item {
     NSLog(@"onUPProgress UUPItem Finish:%@ - %@",item.mDisplayName,item.mRemoteUri);
+    __weak typeof(self) weakSelf = self;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+            __strong typeof(weakSelf) strongSelf = weakSelf;
+        strongSelf.text2.text = [NSString stringWithFormat:@"上传进度：%.2f%%",item.mProgress * 100];
+        strongSelf->isFirstUpload = false;
+        strongSelf.text3.text = @"上传成功";
+        NSTimeInterval yu = [[NSDate date] timeIntervalSince1970];
+        strongSelf.text4.text = [NSString stringWithFormat:@"用时：%.0f秒",yu -lastTime];
+    });
 }
 
 - (void)onUPProgress:(nonnull UUPItem *)item {
     NSLog(@"onUPProgress UUPItem Progress:%f",item.mProgress);
+     __weak typeof(self) weakSelf = self;
+     dispatch_sync(dispatch_get_main_queue(), ^{
+             __strong typeof(weakSelf) strongSelf = weakSelf;
+         strongSelf.text2.text = [NSString stringWithFormat:@"上传进度：%.2f%%",item.mProgress * 100];
+         strongSelf.text3.text = @"上传中";
+         NSTimeInterval yu = [[NSDate date] timeIntervalSince1970];
+         strongSelf.text4.text = [NSString stringWithFormat:@"用时：%.0f秒",yu -lastTime];
+     });
 }
 
 @end

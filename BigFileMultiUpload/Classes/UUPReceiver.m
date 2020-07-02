@@ -48,8 +48,8 @@
                                 [strongSelf.mItem cancel];
                                 break;
                                 case -1:
-                                strongSelf.mItem.mError = BAD_MIMETYPE;
-                                [strongSelf.mItem cancel];
+                                strongSelf.mItem.mError = BAD_FUID;
+                                [strongSelf.mItem _getFuid];
                                 break;
                                 case 1000:
                                 strongSelf.mItem.mError = BAD_ACCESS;
