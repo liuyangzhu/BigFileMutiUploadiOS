@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,assign) long maxSize; //最大字节限制，单位字节B
 @property(nonatomic,assign) long maxDuration; //最大时长限制，单位秒 s
 @property(nonatomic,assign) long perSlicedSize; //单个分片大小，单位字节B
+@property(nonatomic,assign) long maxSliceds; //最大缓存分片数量，建议不超过50，不低于10
 @property(nonatomic,assign) int retryTimes; //单个分片失败后尝试次数
 @property(nonatomic,strong) NSString* fuidURi; //单个分片失败后尝试次数
 @property(nonatomic,strong) NSString* serverURi; //单个分片失败后尝试次数

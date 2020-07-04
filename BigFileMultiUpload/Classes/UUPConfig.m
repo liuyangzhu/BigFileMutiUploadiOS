@@ -19,6 +19,7 @@
         _sharedInstance.maxSize       = 2L * 1024 * 1024 * 1024;
         _sharedInstance.maxDuration   = 2 * 60 * 60 ; //两个小时
         _sharedInstance.retryTimes    = 3;
+        _sharedInstance.maxSliceds    = 30;
         _sharedInstance.perSlicedSize = 5 * 1024 * 1024;
         _sharedInstance.authSign = @"";
         _sharedInstance.deviceToken = @"";

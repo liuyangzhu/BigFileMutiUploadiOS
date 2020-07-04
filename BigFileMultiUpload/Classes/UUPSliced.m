@@ -19,6 +19,8 @@
 @property(nonatomic,strong) UUPConfig* mConfig;
 @property(nonatomic,strong) NSString* mPath;
 @property(nonatomic,strong) NSString* mTempRoot;
+@property(nonatomic,assign) long mTempLen;
+@property(nonatomic,assign) long mCurrentLen;
 @end
 @implementation UUPSliced
 
@@ -38,6 +40,7 @@
                 _mConfig = [[UUPConfig alloc] init];
             }
             _mSlicedList = [[NSMutableArray alloc] initWithCapacity:0];
+            _mTempLen = _mConfig.maxSliceds;
         }
     }
     return self;
@@ -47,41 +50,46 @@
     UUPLogRetainCountO(@"UUPSliced_makeSliced_start", self);
     if (_mItem == nil) return;
     if (_mPath == nil) return;
-
-    long x = _mItem.mSize / _mConfig.perSlicedSize;
-    long y = _mItem.mSize % _mConfig.perSlicedSize;
-    _mTotalSliced = y>0 ? x+1 : x;
-    long buffer = _mConfig.perSlicedSize;
-    
-    NSFileHandle *readHandle = [NSFileHandle fileHandleForReadingAtPath:_mPath];
-    if(readHandle == nil){
-        _mItem.mError = BAD_IO;
-        return;
-    }
-    NSURL *file = [NSURL URLWithString:_mPath];
-    if(file == nil){
-        _mItem.mError = BAD_FILE;
+    @autoreleasepool {
+        long x = _mItem.mSize / _mConfig.perSlicedSize;
+        long y = _mItem.mSize % _mConfig.perSlicedSize;
+        _mTotalSliced = y>0 ? x+1 : x;
+        long buffer = _mConfig.perSlicedSize;
+        
+        NSFileHandle *readHandle = [NSFileHandle fileHandleForReadingAtPath:_mPath];
+        if(readHandle == nil){
+            _mItem.mError = BAD_IO;
+            return;
+        }
+        NSURL *file = [NSURL URLWithString:_mPath];
+        if(file == nil){
+            _mItem.mError = BAD_FILE;
+            [readHandle closeFile];
+            return;
+        }
+        NSString *ext = file.pathExtension;
+        long remainCount = _mTotalSliced - _mCurrentLen;
+        long tempCount  = _mTempLen < remainCount ? _mTempLen : remainCount;
+        for (long i = 1+_mCurrentLen; i <= tempCount + _mCurrentLen; i++) {
+            [readHandle seekToFileOffset:buffer * (i-1)];
+            NSData *data = [readHandle readDataOfLength:buffer];
+            NSString *path = [_mTempRoot stringByAppendingFormat:@"/%ld.%@",i,ext];
+            UUPLog(@"UUPSliced_path:%@",path);
+            [data writeToFile:path atomically:true];
+            UUPSlicedItem *sItem = [[UUPSlicedItem alloc] init];
+            sItem.mSlicedFile = path;
+            sItem.mSlicedIndex = i;
+            sItem.mSlicedSize = data.length;
+            sItem.mProgress = data.length * 1.0 / self.mItem.mSize;
+            [_mSlicedList addObject:sItem];
+            data = nil;
+            path = nil;
+        }
+        _mCurrentLen = _mCurrentLen + tempCount;
         [readHandle closeFile];
-        return;
+        readHandle = nil;
     }
-    NSString *ext = file.pathExtension;
-    for (long i = 1; i <= _mTotalSliced; i++) {
-        [readHandle seekToFileOffset:buffer * (i-1)];
-        NSData *data = [readHandle readDataOfLength:buffer];
-        NSString *path = [_mTempRoot stringByAppendingFormat:@"/%ld.%@",i,ext];
-        UUPLog(@"UUPSliced_path:%@",path);
-        [data writeToFile:path atomically:true];
-        UUPSlicedItem *sItem = [[UUPSlicedItem alloc] init];
-        sItem.mSlicedFile = path;
-        sItem.mSlicedIndex = i;
-        sItem.mSlicedSize = data.length;
-        sItem.mProgress = data.length * 1.0 / self.mItem.mSize;
-        [_mSlicedList addObject:sItem];
-        data = nil;
-        path = nil;
-    }
-    [readHandle closeFile];
-    readHandle = nil;
+    
     UUPLog(@"UUPSliced_item:%@",_mSlicedList);
     UUPLogRetainCountO(@"UUPSliced_makeSliced_end", self);
 }
@@ -111,7 +119,10 @@
 - (BOOL)clean:(UUPSlicedItem*)item{
     UUPLogRetainCountO(@"UUPSliced_clean", self);
     @synchronized (self) {
-        if(_mItem == nil || item == nil) return false;
+        if(_mItem == nil || item == nil) {
+            [self destroy];
+            return false;
+        }
         if(item.mSlicedFile != nil){
             NSFileManager *manager = [NSFileManager defaultManager];
             NSError *error = nil;
@@ -119,7 +130,13 @@
             if(error != nil)error=nil;
         }
         [_mSlicedList removeObject:item];
+        
+        if(_mSlicedList.count == 1 && _mCurrentLen < _mTotalSliced){
+            [self makeSliced];
+        }
+        
         if(_mSlicedList.count < 1){
+            
             [self destroy];
         }
         return true;
@@ -130,6 +147,7 @@
     _mItem = nil;
     _mConfig = nil;
     [_mSlicedList removeAllObjects];
+    _mSlicedList = nil;
     NSFileManager *manager = [NSFileManager defaultManager];
     NSError *error = nil;
     [manager removeItemAtPath:_mTempRoot error:&error];

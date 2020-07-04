@@ -14,7 +14,7 @@
 
 @interface UUPManager()<UUPItf>
 @property(nonatomic,assign) id<UUPItf> mDelegate;
-@property(nonatomic,weak) UUPConfig* mConfig;
+@property(nonatomic,strong) UUPConfig* mConfig;
 @property(nonatomic,strong) NSOperationQueue* mUploading;
 @property(nonatomic,strong) NSMutableDictionary<UUPItem*,id<UUPItf>>* mRecords;
 @end
@@ -97,7 +97,7 @@
         NSArray<UUPItem*>* mTemp = self.mUploading.operations;
         for (UUPItem* tItem in mTemp) {
             if ([tItem isEqual:item]) {
-                if(!tItem.isFinished)[tItem cancel];
+                if(!tItem.isFinished || !item.isCancelled)[tItem cancel];
             }
         }
         mTemp = nil;
@@ -188,7 +188,7 @@
 
 - (void)onUPError:(nonnull UUPItem *)item {
 //    id<UUPItf> delegate = [self getDelegate:item];
-    [self cancel:item];
+//    [self cancel:item];
     if (_mDelegate!=nil) {
         if (_mDelegate != nil && [_mDelegate respondsToSelector:@selector(onUPError:)]) {
             [_mDelegate performSelector:@selector(onUPError:) withObject:item];

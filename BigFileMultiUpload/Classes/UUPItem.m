@@ -31,6 +31,7 @@
 @property(nonatomic,assign) float mPProgress;
 @property(nonatomic,assign) float mLastProgress;
 @property(nonatomic,assign) int lowTimes;
+@property(nonatomic,assign) int retryTimes;
 @property(nonatomic,strong) NSString* mUploadFileName;
 @property(nonatomic,strong) NSTimer* mSpeedTimer;
 @property(nonatomic,strong) NSString* mFUID;
@@ -108,7 +109,6 @@
         }else if(self.mFUID == nil){//不作处理
             [self _getFuid];
         }else{
-           [self.mSession finishTasksAndInvalidate];
            [self _next];
            [self _calculateSpeed];
         }
@@ -140,13 +140,20 @@
     _ismFinish = YES;
     [self didChangeValueForKey:@"isFinished"];
     
-    if (self.mSpeedTimer != nil) {
-        [self.mSpeedTimer invalidate];
-        self.mSpeedTimer = nil;
-    }
     [self sendMessageType:RUN_ERROR];
     UUPLogRetainCount(@"UUPItem")
     [self sendMessageType:RUN_CANCEL];
+    
+    [[NSRunLoop mainRunLoop] cancelPerformSelectorsWithTarget:self];
+    if(_mSpeedTimer != nil){
+        [_mSpeedTimer invalidate];
+        _mSpeedTimer = nil;
+    }
+    
+    if(self.mSession != nil){
+        [self.mSession finishTasksAndInvalidate];
+        self.mSession = nil;
+    }
 }
 - (void)_preStart{
     if(self.ismValidate){
@@ -160,7 +167,6 @@
                }else if(self.mFUID == nil){//不作处理
                    [self _getFuid];
                }else{
-                   [self.mSession finishTasksAndInvalidate];
                    [self _next];
                    [self _calculateSpeed];
                }
@@ -286,11 +292,21 @@
 - (void)_finish{
     [self willChangeValueForKey:@"isFinished"];
        _ismFinish = YES;
-       [self didChangeValueForKey:@"isFinished"];
+    [self didChangeValueForKey:@"isFinished"];
     if (self.mDelegate!=nil) {
         if (self.mDelegate != nil && [self.mDelegate respondsToSelector:@selector(onUPFinish:)]) {
             [self.mDelegate performSelector:@selector(onUPFinish:) withObject:self];
         }
+    }
+    [[NSRunLoop mainRunLoop] cancelPerformSelectorsWithTarget:self];
+    if(_mSpeedTimer != nil){
+        [_mSpeedTimer invalidate];
+        _mSpeedTimer = nil;
+    }
+    
+    if(self.mSession != nil){
+        [self.mSession finishTasksAndInvalidate];
+        self.mSession = nil;
     }
 }
 
@@ -308,7 +324,7 @@
 }
 
 - (BOOL)isExecuting{
-    return _ismStartting;
+    return !_ismPaused;
 }
 
 - (BOOL)isReady{
@@ -378,10 +394,10 @@
     }else{
         self.mError = NONE;
         _ismValidate = true;
-        _ismValidateing = false;
         self.mUploadFileName = [NSString stringWithFormat:@"%@%@",[UUPUtil randomName],self.mDisplayName];
         self.mSizeStr = [UUPUtil calculateSize:self.mSize];
     }
+    self.ismValidateing = false;
 }
 
 ///
@@ -392,7 +408,6 @@
         UUPLogRetainCountO(@"UUPItem1",self)
         self.mSliced = [[UUPSliced alloc] initWith:weakSelf];
         UUPLogRetainCountO(@"UUPItem3",self)
-        if(self.ismValidate) [self.mSliced makeSliced];
     }
     if (self.mReceiver == nil) {
         __weak typeof(self) weakSelf = self;
@@ -413,6 +428,8 @@
     }else if(self.mDuration > self.mConfig.maxDuration){
         self.mError = OVER_MAXDURATION;
         _ismValidate = false;
+    }else{
+        if(self.ismValidate) [self.mSliced makeSliced];
     }
     
     if (self.mError != NONE) {
@@ -427,38 +444,46 @@
     if (self.mSpeedTimer == nil) {
         UUPLogRetainCount(@"UUPItem")
         id obj = [UUPItemProxy proxyWithTarget:self];
-        self.mSpeedTimer = [NSTimer timerWithTimeInterval:1.0 target:obj selector:@selector(_timerRun:) userInfo:nil repeats:YES];
+        self.mSpeedTimer = [NSTimer timerWithTimeInterval:1 target:obj selector:@selector(_timerRun:) userInfo:obj repeats:YES];
         [[NSRunLoop mainRunLoop] addTimer:self.mSpeedTimer forMode:NSDefaultRunLoopMode];
         UUPLogRetainCount(@"UUPItem")
     }
 }
 
 - (void)_timerRun:(NSTimer*)timer{
-    double tem = (_mProgress - _mLastProgress) * _mSize;
-    _mSpeed = [[NSNumber numberWithDouble:tem] longValue];
-    _mSpeed = fabsl(_mSpeed);
-    _mSpeedStr = [UUPUtil calculateSpeed:_mSpeed];
-    _mLastProgress = _mProgress;
-    [self sendMessageType:RUN_PROSESS];
-    UUPLog(@"UUPItem_timerRun:%@---%f---%f",_mSpeedStr,_mSpeed,tem);
     
-    if(_lowTimes >= 10 && _lowTimes % 10 == 0 ){
-        if(_mError != LOW_NET){
-            _mError = LOW_NET;
-            [self sendMessageType:RUN_ERROR];
-        }
-    }
-    
-    if(_lowTimes < 10){
-        if(_mError == LOW_NET){
-            _mError = NONE;
-        }
-    }
-    
-    if (_mSpeed < 10) {
-        _lowTimes ++;
-    }else{
-        _lowTimes = 0;
+    if(timer.userInfo != nil){
+        UUPItem *weakSelf = (UUPItem*)timer.userInfo;
+        double tem = (weakSelf.mProgress - weakSelf.mLastProgress) * weakSelf.mSize;
+        weakSelf.mSpeed = [[NSNumber numberWithDouble:tem] longValue];
+        weakSelf.mSpeed = fabsl(weakSelf.mSpeed);
+        weakSelf.mSpeedStr = [UUPUtil calculateSpeed:weakSelf.mSpeed];
+        weakSelf.mLastProgress = weakSelf.mProgress;
+
+        UUPLog(@"UUPItem_timerRun:%@---%f---%f",weakSelf.mSpeedStr,weakSelf.mSpeed,tem);
+           
+        if(weakSelf.lowTimes >= 10){
+            weakSelf.mSpeedStr = [NSString stringWithFormat:@"网速缓慢 %@",weakSelf.mSpeedStr];
+            if (weakSelf.lowTimes % 10 == 0 ) {
+                if(weakSelf.mError != LOW_NET){
+                    weakSelf.mError = LOW_NET;
+                       [weakSelf sendMessageType:RUN_ERROR];
+                   }
+               }
+           }
+           
+        if(weakSelf.lowTimes < 10){
+            if(weakSelf.mError == LOW_NET){
+                weakSelf.mError = NONE;
+               }
+           }
+           
+        if (weakSelf.mSpeed < 10) {
+            weakSelf.lowTimes ++;
+           }else{
+               weakSelf.lowTimes = 0;
+           }
+           [weakSelf sendMessageType:RUN_PROSESS];
     }
 }
 
@@ -469,9 +494,10 @@
         _mSpeedTimer = nil;
     }
     _mDelegate = nil;
-    [self.mSession finishTasksAndInvalidate];
-    _mReceiver = nil;
+    [self.mSession invalidateAndCancel];
+    self.mSession = nil;
     if(_mSliced!=nil)[_mSliced destroy];
+    _mReceiver = nil;
     _mRemoteUri = nil;
     _mContentUri = nil;
     _mDisplayName = nil;

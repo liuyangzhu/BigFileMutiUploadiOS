@@ -9,6 +9,7 @@
 #import "UUPItem.h"
 #import "UUPHeader.h"
 #import "UUPSliced.h"
+#import "UUPConfig.h"
 #import "UUPSlicedItem.h"
 #import "UUPItem+Protected.h"
 
@@ -33,6 +34,7 @@
         url_session_manager_create_task_safely(^{
             __strong typeof(weakSelf) strongSelf = weakSelf;
             if (error == nil) {
+                strongSelf.mItem.retryTimes = 0;
                 if(data != nil){
                     NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
                                    UUPLog(@"UUPReceiver:%@",dic);
@@ -45,33 +47,32 @@
                         switch (errorCode) {
                             case -1001:
                                 strongSelf.mItem.mError = BAD_ACCESS;
-                                [strongSelf.mItem cancel];
                                 break;
                                 case -1:
                                 strongSelf.mItem.mError = BAD_FUID;
-                                [strongSelf.mItem _getFuid];
                                 break;
                                 case 1000:
                                 strongSelf.mItem.mError = BAD_ACCESS;
-                                [strongSelf.mItem cancel];
                                 break;
                                 case 1001:
                                 strongSelf.mItem.mError = BAD_PARAMS;
-                                [strongSelf.mItem cancel];
                                 break;
                                 case 1002:
                                 strongSelf.mItem.mError = BAD_FUID;
-                                [strongSelf.mItem cancel];
                                 break;
                                 case 1003:
                                 strongSelf.mItem.mError = BAD_SLICED;
-                                [strongSelf.mItem cancel];
                                 break;
                             default:
                                 strongSelf.mItem.mError = BAD_OTHER;
-                                [strongSelf.mItem cancel];
                                 break;
                         }
+                        if(strongSelf.mItem.mCurrentItem!=nil){
+                            strongSelf.mItem.mCurrentItem.isSuspend = false;
+                            strongSelf.mItem.mCurrentItem.isFinish = false;
+                            strongSelf.mItem.mCurrentItem.mPProgress = 0.0;
+                        }
+                        [strongSelf.mItem _preStart];
                     }else{
                         //如果当前上传的分片上传成功继续下一分片
                         strongSelf.mItem.mError = NONE;
@@ -117,7 +118,17 @@
                 }else{
                     strongSelf.mItem.mError = LOW_NET;
                 }
-                [strongSelf.mItem cancel];
+                if(strongSelf.mItem.mCurrentItem!=nil){
+                    strongSelf.mItem.mCurrentItem.isSuspend = false;
+                    strongSelf.mItem.mCurrentItem.isFinish = false;
+                    strongSelf.mItem.mCurrentItem.mPProgress = 0.0;
+                }
+                if(strongSelf.mItem.retryTimes < strongSelf.mItem.mConfig.retryTimes){
+                    strongSelf.mItem.retryTimes++;
+                    [strongSelf.mItem _preStart];
+                }else{
+                    [strongSelf.mItem cancel];
+                }
             }
         });
     };
@@ -126,6 +137,7 @@
         url_session_manager_create_task_safely(^{
             __strong typeof(weakSelf) strongSelf = weakSelf;
             if (error == nil) {
+                strongSelf.mItem.retryTimes = 0;
                 if(data != nil){
                     NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
                                    UUPLog(@"UUPReceiver:%@",dic);
@@ -139,8 +151,8 @@
                             case -1001:
                                 strongSelf.mItem.mError = BAD_ACCESS;
                                 break;
-                                case -1:
-                                strongSelf.mItem.mError = BAD_MIMETYPE;
+                                case -2:
+                                strongSelf.mItem.mError = BAD_FUID;
                                 break;
                                 case 1000:
                                 strongSelf.mItem.mError = BAD_ACCESS;
@@ -158,19 +170,19 @@
                                 strongSelf.mItem.mError = BAD_OTHER;
                                 break;
                         }
-                        [strongSelf.mItem cancel];
+                        [strongSelf.mItem _getFuid];
                     }else{
                         NSDictionary *data = dic[@"data"];
                         if(data != nil){
                             NSString *fuid = data[@"fuid"];
-//                            NSString *diff_chunk = data[@"diff_chunk"];
-                            if (fuid != nil) {
-                                strongSelf.mItem.mFUID = fuid;
+                            NSString *diff_chunk = data[@"diff_chunk"];
+                            if (fuid != nil || diff_chunk != nil) {
+                                if(fuid != nil)strongSelf.mItem.mFUID = fuid;
                                 strongSelf.mItem.mError = NONE;
                                 [strongSelf.mItem _preStart];
                             }else{
                                 strongSelf.mItem.mError = BAD_FUID;
-                                [strongSelf.mItem cancel];
+                                [strongSelf.mItem _getFuid];
                             }
                         }else{
                             strongSelf.mItem.mError = BAD_OTHER;
@@ -194,7 +206,12 @@
                 }else{
                     strongSelf.mItem.mError = LOW_NET;
                 }
-                [strongSelf.mItem cancel];
+                if(strongSelf.mItem.retryTimes < strongSelf.mItem.mConfig.retryTimes){
+                    strongSelf.mItem.retryTimes++;
+                    [strongSelf.mItem _getFuid];
+                }else{
+                    [strongSelf.mItem cancel];
+                }
             }
         });
     };

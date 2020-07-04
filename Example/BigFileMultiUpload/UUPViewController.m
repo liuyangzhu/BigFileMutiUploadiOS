@@ -25,6 +25,7 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
     CNChooseMediaType mediaType;
     BOOL isFirstUpload;
     NSTimeInterval lastTime;
+    UUPItem *ssitem;
 }
 @property(nonatomic,strong)UIActionSheet *imgPickSheet;
 @property (weak, nonatomic) IBOutlet UILabel *text1;
@@ -50,14 +51,23 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
 }
 
 - (IBAction)uplooadAction:(id)sender {
-    if (self.imgPickSheet == nil) {
-        UIActionSheet *imgPickSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"从本地选取",@"启用相机", nil];
-        imgPickSheet.delegate = self;
-        self.imgPickSheet = imgPickSheet;
+    if(ssitem == nil || ssitem.isFinished){
+        if (self.imgPickSheet == nil) {
+            UIActionSheet *imgPickSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"从本地选取",@"启用相机", nil];
+            imgPickSheet.delegate = self;
+            self.imgPickSheet = imgPickSheet;
+        }
+        self.imgPickSheet.tag = 1;
+        [self.imgPickSheet dismissWithClickedButtonIndex:0 animated:NO];
+        [self.imgPickSheet showInView:self.view];
+    }else{
+        if (ssitem.isExecuting) {
+            [ssitem pause];
+        }else{
+            [ssitem start];
+        }
     }
-    self.imgPickSheet.tag = 1;
-    [self.imgPickSheet dismissWithClickedButtonIndex:0 animated:NO];
-    [self.imgPickSheet showInView:self.view];
+    
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
@@ -190,6 +200,7 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
 
 ///
 - (void)upload:(UUPItem*)item{
+    ssitem = item;
     [[UUPManager shareInstance:self] start:item immediately:true];
 //    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 //        [[UUPManager shareInstance:self] cancel:item];
@@ -204,9 +215,9 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
     return config;
 }
 - (void)onUPStart:(nonnull UUPItem *)item {
-    NSLog(@"onUPStart UUPItem:%ld",item.mError);
+    NSLog(@"onUPStart UUPItem:%lu",(unsigned long)item.mError);
     __weak typeof(self) weakSelf = self;
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(weakSelf) strongSelf = weakSelf;
         strongSelf.text1.text = [NSString stringWithFormat:@"%@【%@】",item.mDisplayName,item.mSizeStr];
         if(!strongSelf->isFirstUpload){
@@ -220,9 +231,9 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
 }
 
 - (void)onUPError:(nonnull UUPItem *)item {
-    NSLog(@"onUPProgress UUPItem Error:%ld",item.mError);
+    NSLog(@"onUPProgress UUPItem Error:%lu",(unsigned long)item.mError);
     __weak typeof(self) weakSelf = self;
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(weakSelf) strongSelf = weakSelf;
         strongSelf.text6.text = [NSString stringWithFormat:@"%lu",(unsigned long)item.mError];
     });
@@ -231,7 +242,7 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
 - (void)onUPFinish:(nonnull UUPItem *)item {
     NSLog(@"onUPProgress UUPItem Finish:%@ - %@",item.mDisplayName,item.mRemoteUri);
     __weak typeof(self) weakSelf = self;
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(weakSelf) strongSelf = weakSelf;
         strongSelf.text2.text = [NSString stringWithFormat:@"上传进度：%.2f%%",item.mProgress * 100];
         strongSelf->isFirstUpload = false;

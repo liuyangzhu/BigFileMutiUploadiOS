@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,strong) NSURLSession* mRequest;
 @property(nonatomic,strong) UUPReceiver* mReceiver;
 @property(nonatomic,assign) float mPProgress;
+@property(nonatomic,assign) int retryTimes;
 - (void)_preStart;
 - (void)_next;
 - (void)_finish;
