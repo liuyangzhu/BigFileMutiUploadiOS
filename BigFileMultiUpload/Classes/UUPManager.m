@@ -35,7 +35,6 @@
             if(!item.isCancelled)[item cancel];
         }
         [instance.mRecords removeAllObjects];
-        instance.mRecords = nil;
     }
     
     if(instance.mUploading != nil){
@@ -43,7 +42,6 @@
             if(!item.isCancelled)[item cancel];
         }
         [instance.mUploading cancelAllOperations];
-        instance.mUploading = nil;
     }
     instance.mConfig = nil;
     instance.mDelegate = nil;
@@ -88,7 +86,9 @@
     UUPLogRetainCountO(@"UUPItem02",item);
     [self.mRecords setObject:self.mDelegate forKey:item];
     UUPLogRetainCountO(@"UUPItem03",item);
-    [self.mUploading setSuspended:false];
+    if(self.mUploading.suspended){
+        [self.mUploading setSuspended:false];
+    }
 }
 
 - (void)cancel:(UUPItem*)item{
@@ -138,6 +138,7 @@
         _sharedInstance = [[super allocWithZone:NULL] init];
         _sharedInstance.mRecords = [NSMutableDictionary<UUPItem*,id<UUPItf>> dictionaryWithCapacity:0];
         _sharedInstance.mUploading = [[NSOperationQueue alloc] init];
+        _sharedInstance.mUploading.suspended = true;
     });
     return _sharedInstance;
 }

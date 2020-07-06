@@ -11,7 +11,7 @@
 #if DEBUG
 #define UUPLog(args,...)  NSLog((args),##__VA_ARGS__)
 #else
-#define UUPLog(args,...)  //No logs
+#define UUPLog(args,...)  NSLog((args),##__VA_ARGS__)//No logs
 #endif
 
 #define UUPLogRetainCount(args)  UUPLog(@"%@ Retain count is %ld",((args)), CFGetRetainCount((__bridge CFTypeRef)self));
@@ -29,7 +29,7 @@ static dispatch_queue_t url_session_manager_creation_queue() {
     static dispatch_queue_t af_url_session_manager_creation_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        af_url_session_manager_creation_queue = dispatch_queue_create("com.alamofire.networking.session.manager.creation", DISPATCH_QUEUE_SERIAL);
+        af_url_session_manager_creation_queue = dispatch_queue_create("com.bigfileupload.networking.session.manager.creation", DISPATCH_QUEUE_SERIAL);
     });
 
     return af_url_session_manager_creation_queue;
@@ -39,7 +39,7 @@ static dispatch_queue_t url_session_manager_processing_queue() {
     static dispatch_queue_t af_url_session_manager_processing_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        af_url_session_manager_processing_queue = dispatch_queue_create("com.alamofire.networking.session.manager.processing", DISPATCH_QUEUE_CONCURRENT);
+        af_url_session_manager_processing_queue = dispatch_queue_create("com.bigfileupload.networking.session.manager.processing", DISPATCH_QUEUE_CONCURRENT);
     });
 
     return af_url_session_manager_processing_queue;

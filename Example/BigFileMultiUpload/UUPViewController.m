@@ -166,13 +166,20 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
                    }];
         
     } else if (CNChooseMediaTypeTakePhoto == mediaType) {
-        NSURL *infoM = [info objectForKey:UIImagePickerControllerMediaURL];
         __weak typeof(self) weakSelf = self;
-        [picker dismissViewControllerAnimated:YES completion:^{
-            __strong typeof(self) strongSelf = weakSelf;
-                       UUPItem *item = [[UUPItem alloc] initWith:infoM type:IMAGE];
-                       [strongSelf upload:item];
-                   }];
+        UIImage *image = [info valueForKey:UIImagePickerControllerOriginalImage];
+        ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
+        [assetsLibrary writeImageDataToSavedPhotosAlbum:UIImageJPEGRepresentation(image,(CGFloat)1.0) metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+            if (!error) {
+              [picker dismissViewControllerAnimated:YES completion:^{
+                        __strong typeof(self) strongSelf = weakSelf;
+                        UUPItem *item = [[UUPItem alloc] initWith:assetURL type:IMAGE];
+                        [strongSelf upload:item];
+                     }];
+            }else{
+                [picker dismissViewControllerAnimated:YES completion:nil];
+            }
+        }];
      } else if (CNChooseMediaTypeRecordMovie == mediaType) {
         
         
@@ -183,13 +190,6 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
                         UUPItem *item = [[UUPItem alloc] initWith:infoM type:VIDEO];
                         [strongSelf upload:item];
                     }];
-//        ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
-//        // 将视频保存到相册中
-//        [assetsLibrary writeVideoAtPathToSavedPhotosAlbum:infoM
-//                                          completionBlock:^(NSURL *assetURL, NSError *error) {
-//
-//                                              [picker dismissViewControllerAnimated:YES completion:];
-//                                          }];
     }
 }
 

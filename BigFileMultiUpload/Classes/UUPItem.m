@@ -89,6 +89,8 @@
 - (void)start{
     while (_ismValidateing) {
        //wait
+        UUPLog(@"UUPItem 等待中。。。。");
+        continue;
     }
     
     if (!self.ismChecked) {
@@ -156,7 +158,7 @@
     }
 }
 - (void)_preStart{
-    if(self.ismValidate){
+    if(self.ismValidate && !self.ismValidateing){
        if (!_ismPaused) { //非暂停
            if([self.mSliced remainSliced]<1){
                [self _finish];
@@ -183,7 +185,7 @@
             requestURL = [requestURL stringByAppendingFormat:@"?fuid=%@&total=%ld",strongSelf.mFUID,strongSelf.mSliced.mTotalSliced];
         }
         NSURL *url = [NSURL URLWithString:requestURL];
-        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:20.0f];
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:60.0f];
         [request setHTTPMethod:@"GET"];
         [request setValue:self.mConfig.authSign forHTTPHeaderField:@"Auth-Sign"];
         [request setValue:self.mConfig.deviceToken forHTTPHeaderField:@"Device-Token"];
@@ -209,7 +211,7 @@
             }
             
             NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; charset=utf-8; boundary=%@", kBoundary];
-            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:20.0f];
+            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0f];
             [request setHTTPMethod:@"POST"];
             [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
             
@@ -525,7 +527,7 @@
                 }
                 break;
             case RUN_START: // start
-                if (strongSelf.mDelegate != nil && [strongSelf.mDelegate respondsToSelector:@selector(onUPStart:)]) {
+                if (!strongSelf.isFinished && strongSelf.mDelegate != nil && [strongSelf.mDelegate respondsToSelector:@selector(onUPStart:)]) {
                     [strongSelf.mDelegate performSelector:@selector(onUPStart:) withObject:strongSelf];
                 }
                 break;
@@ -535,17 +537,17 @@
                 }
                 break;
             case RUN_PAUSE: // pause
-                if (strongSelf.mDelegate != nil && [strongSelf.mDelegate respondsToSelector:@selector(onUPPause:)]) {
+                if (!strongSelf.isFinished && strongSelf.mDelegate != nil && [strongSelf.mDelegate respondsToSelector:@selector(onUPPause:)]) {
                     [strongSelf.mDelegate performSelector:@selector(onUPPause:) withObject:strongSelf];
                 }
                 break;
             case RUN_CANCEL: // cancel
-                if (strongSelf.mDelegate != nil && [strongSelf.mDelegate respondsToSelector:@selector(onUPCancel:)]) {
+                if (!strongSelf.isFinished && strongSelf.mDelegate != nil && [strongSelf.mDelegate respondsToSelector:@selector(onUPCancel:)]) {
                     [strongSelf.mDelegate performSelector:@selector(onUPCancel:) withObject:strongSelf];
                 }
                 break;
             case RUN_ERROR: // error
-                if (strongSelf.mError != NONE && strongSelf.mDelegate != nil && [strongSelf.mDelegate respondsToSelector:@selector(onUPError:)]) {
+                if (!strongSelf.isFinished && strongSelf.mError != NONE && strongSelf.mDelegate != nil && [strongSelf.mDelegate respondsToSelector:@selector(onUPError:)]) {
                     [strongSelf.mDelegate performSelector:@selector(onUPError:) withObject:strongSelf];
                 }
                 break;
