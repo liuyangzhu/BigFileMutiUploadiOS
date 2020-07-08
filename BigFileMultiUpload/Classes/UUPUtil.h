@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString*)calculateSpeed:(double)speed;
 + (NSString*)calculateSize:(long)size;
 + (BOOL)isNetworkConnected;
++ (void)removeSlicedFile;
 @end
 
 NS_ASSUME_NONNULL_END

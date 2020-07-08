@@ -24,6 +24,7 @@ typedef NS_ENUM(NSUInteger, UUPItemErrorType) {
     BAD_SLICED              = 1003,//分片上传失败
     BAD_MIMETYPE            = 1004,//不支持的文件类型
     BAD_OTHER               = 1005,//未知服务器错误
+    BAD_MERGE               = 1006,//服务端合成文件失败
     OVER_RETRY              = 1101,//超过重试次数
     OVER_MAXSIZE            = 1102,//超过大小
     OVER_MAXDURATION        = 1103,//超过时长

@@ -88,7 +88,7 @@
 
 - (void)start{
     while (_ismValidateing) {
-       //wait
+        //wait
         UUPLog(@"UUPItem 等待中。。。。");
         continue;
     }
@@ -104,15 +104,15 @@
         [self willChangeValueForKey:@"isPaused"];
         _ismPaused = false;
         [self didChangeValueForKey:@"isPaused"];
-
+        
         if(_mTask != nil && _mTask.state == NSURLSessionTaskStateSuspended){
             [_mTask resume];
             [self _calculateSpeed];
         }else if(self.mFUID == nil){//不作处理
             [self _getFuid];
         }else{
-           [self _next];
-           [self _calculateSpeed];
+            [self _next];
+            [self _calculateSpeed];
         }
         [self willChangeValueForKey:@"isExecuting"];
         _ismStartting = true;
@@ -120,16 +120,23 @@
         
         [self sendMessageType:RUN_START];
     }else{
-        [self sendMessageType:RUN_ERROR];
         [self cancel];
     }
 }
+
+- (void)resume{
+    [self willChangeValueForKey:@"isPaused"];
+    _ismPaused = false;
+    [self didChangeValueForKey:@"isPaused"];
+    [self _preStart];
+}
+
 - (void)pause{
     [self willChangeValueForKey:@"isPaused"];
     _ismPaused = true;
-    if(_mTask != nil && _mTask.state == NSURLSessionTaskStateRunning){
-        [_mTask suspend];
-    }
+//    if(_mTask != nil && _mTask.state == NSURLSessionTaskStateRunning){
+//        [_mTask suspend];
+//    }
     [self didChangeValueForKey:@"isPaused"];
     
     [self sendMessageType:RUN_PAUSE];
@@ -158,23 +165,27 @@
     }
 }
 - (void)_preStart{
-    if(self.ismValidate && !self.ismValidateing){
-       if (!_ismPaused) { //非暂停
-           if([self.mSliced remainSliced]<1){
-               [self _finish];
-           }else{
-               if(_mTask != nil && _mTask.state == NSURLSessionTaskStateSuspended){
-                   [_mTask resume];
-                   [self _calculateSpeed];
-               }else if(self.mFUID == nil){//不作处理
-                   [self _getFuid];
-               }else{
-                   [self _next];
-                   [self _calculateSpeed];
+    __weak typeof(self) weakSelf = self;
+    url_session_manager_create_task_safely(^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if(strongSelf.ismValidate && !strongSelf.ismValidateing){
+            if (!strongSelf.ismPaused) { //非暂停
+                   if([strongSelf.mSliced remainSliced]<1){
+                       [strongSelf _finish];
+                   }else{
+                       if(strongSelf.mTask != nil && strongSelf.mTask.state == NSURLSessionTaskStateSuspended){
+                           [strongSelf.mTask resume];
+                           [strongSelf _calculateSpeed];
+                       }else if(strongSelf.mFUID == nil){//不作处理
+                           [strongSelf _getFuid];
+                       }else{
+                           [strongSelf _next];
+                           [strongSelf _calculateSpeed];
+                       }
+                   }
                }
-           }
-       }
-    }
+        }
+    });
 }
 - (void)_getFuid{
     __weak typeof(self) weakSelf = self;
@@ -185,7 +196,7 @@
             requestURL = [requestURL stringByAppendingFormat:@"?fuid=%@&total=%ld",strongSelf.mFUID,strongSelf.mSliced.mTotalSliced];
         }
         NSURL *url = [NSURL URLWithString:requestURL];
-        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:60.0f];
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60.0f];
         [request setHTTPMethod:@"GET"];
         [request setValue:self.mConfig.authSign forHTTPHeaderField:@"Auth-Sign"];
         [request setValue:self.mConfig.deviceToken forHTTPHeaderField:@"Device-Token"];
@@ -211,15 +222,9 @@
             }
             
             NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; charset=utf-8; boundary=%@", kBoundary];
-            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0f];
+            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:300.0f];
             [request setHTTPMethod:@"POST"];
             [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
-            
-            if (strongSelf.mDelegate!=nil) {
-                if (strongSelf.mDelegate != nil && [strongSelf.mDelegate respondsToSelector:@selector(onUPStart:)]) {
-                    [strongSelf.mDelegate performSelector:@selector(onUPStart:) withObject:strongSelf];
-                }
-            }
             
             NSData *data = [strongSelf _buidData:strongSelf.mCurrentItem.mSlicedFile];
             strongSelf.mTask = [strongSelf.mSession uploadTaskWithRequest:request fromData:data completionHandler:strongSelf.mReceiver.completionHandler];
@@ -233,73 +238,82 @@
 - (NSData *)_buidData:(NSString*)path{
     @autoreleasepool {
         //创建可变字符串
-           NSMutableString *bodyStr = [NSMutableString string];
-           
-           //1 access_token
-           [bodyStr appendFormat:@"--%@\r\n",kBoundary];//\n:换行 \n:切换到行首
-           [bodyStr appendFormat:@"Content-Disposition: form-data; name=\"auth-sign\""];
-           [bodyStr appendFormat:@"\r\n\r\n"];
-           [bodyStr appendFormat:@"%@\r\n",self.mConfig.authSign];
-           
-           //2 fuid
-           [bodyStr appendFormat:@"--%@\r\n",kBoundary];//\n:换行 \n:切换到行首
-           [bodyStr appendFormat:@"Content-Disposition: form-data; name=\"fuid\""];
-           [bodyStr appendFormat:@"\r\n\r\n"];
-           [bodyStr appendFormat:@"%@\r\n",self.mFUID];
-           
-           //3 index
-           [bodyStr appendFormat:@"--%@\r\n",kBoundary];//\n:换行 \n:切换到行首
-           [bodyStr appendFormat:@"Content-Disposition: form-data; name=\"index\""];
-           [bodyStr appendFormat:@"\r\n\r\n"];
-           [bodyStr appendFormat:@"%ld\r\n",self.mCurrentItem.mSlicedIndex];
-           
-           //4 index
-           [bodyStr appendFormat:@"--%@\r\n",kBoundary];//\n:换行 \n:切换到行首
-           [bodyStr appendFormat:@"Content-Disposition: form-data; name=\"total\""];
-           [bodyStr appendFormat:@"\r\n\r\n"];
-           [bodyStr appendFormat:@"%ld\r\n",self.mSliced.mTotalSliced];
-           
-           //5 index
-           [bodyStr appendFormat:@"--%@\r\n",kBoundary];//\n:换行 \n:切换到行首
-           [bodyStr appendFormat:@"Content-Disposition: form-data; name=\"size\""];
-           [bodyStr appendFormat:@"\r\n\r\n"];
-           [bodyStr appendFormat:@"%ld\r\n",self.mSize];
-           
-           //6 file
-           [bodyStr appendFormat:@"--%@\r\n",kBoundary];
-           [bodyStr appendFormat:@"Content-disposition: form-data; name=\"filename\"; filename=\"%@\"",self.mDisplayName];
-           [bodyStr appendFormat:@"\r\n"];
-           [bodyStr appendFormat:@"Content-Type: application/octet-stream"];
-           [bodyStr appendFormat:@"\r\n\r\n"];
-           
-           NSMutableData *bodyData = [NSMutableData data];
-           
-           //(1)startData
-           NSData *startData = [bodyStr dataUsingEncoding:NSUTF8StringEncoding];
-           [bodyData appendData:startData];
-           
-           //(2)pic
-           NSData *picdata  =[NSData dataWithContentsOfFile:path];
-           [bodyData appendData:picdata];
-           
-           //(3)--Str--
-           NSString *endStr = [NSString stringWithFormat:@"\r\n--%@--\r\n",kBoundary];
-           NSData *endData = [endStr dataUsingEncoding:NSUTF8StringEncoding];
-           [bodyData appendData:endData];
-           
-           return bodyData;
+        NSMutableString *bodyStr = [NSMutableString string];
+        
+        //1 access_token
+        [bodyStr appendFormat:@"--%@\r\n",kBoundary];//\n:换行 \n:切换到行首
+        [bodyStr appendFormat:@"Content-Disposition: form-data; name=\"auth-sign\""];
+        [bodyStr appendFormat:@"\r\n\r\n"];
+        [bodyStr appendFormat:@"%@\r\n",self.mConfig.authSign];
+        
+        //2 fuid
+        [bodyStr appendFormat:@"--%@\r\n",kBoundary];//\n:换行 \n:切换到行首
+        [bodyStr appendFormat:@"Content-Disposition: form-data; name=\"fuid\""];
+        [bodyStr appendFormat:@"\r\n\r\n"];
+        [bodyStr appendFormat:@"%@\r\n",self.mFUID];
+        
+        //3 index
+        [bodyStr appendFormat:@"--%@\r\n",kBoundary];//\n:换行 \n:切换到行首
+        [bodyStr appendFormat:@"Content-Disposition: form-data; name=\"index\""];
+        [bodyStr appendFormat:@"\r\n\r\n"];
+        [bodyStr appendFormat:@"%ld\r\n",self.mCurrentItem.mSlicedIndex];
+        
+        //4 index
+        [bodyStr appendFormat:@"--%@\r\n",kBoundary];//\n:换行 \n:切换到行首
+        [bodyStr appendFormat:@"Content-Disposition: form-data; name=\"total\""];
+        [bodyStr appendFormat:@"\r\n\r\n"];
+        [bodyStr appendFormat:@"%ld\r\n",self.mSliced.mTotalSliced];
+        
+        //5 index
+        [bodyStr appendFormat:@"--%@\r\n",kBoundary];//\n:换行 \n:切换到行首
+        [bodyStr appendFormat:@"Content-Disposition: form-data; name=\"size\""];
+        [bodyStr appendFormat:@"\r\n\r\n"];
+        [bodyStr appendFormat:@"%ld\r\n",self.mSize];
+        
+        //6 file
+        [bodyStr appendFormat:@"--%@\r\n",kBoundary];
+        [bodyStr appendFormat:@"Content-disposition: form-data; name=\"filename\"; filename=\"%@\"",self.mDisplayName];
+        [bodyStr appendFormat:@"\r\n"];
+        [bodyStr appendFormat:@"Content-Type: application/octet-stream"];
+        [bodyStr appendFormat:@"\r\n\r\n"];
+        
+        NSMutableData *bodyData = [NSMutableData data];
+        
+        //(1)startData
+        NSData *startData = [bodyStr dataUsingEncoding:NSUTF8StringEncoding];
+        [bodyData appendData:startData];
+        
+        UUPLog(@"UUPItem 拼接文件 参数长度 length：%lu",(unsigned long)startData.length);
+        
+        //(2)file
+        NSError *error;
+        NSURL *url = [NSURL fileURLWithPath:path];
+        [url startAccessingSecurityScopedResource];
+        NSData *filedata  = [NSData dataWithContentsOfURL:url options:NSDataReadingUncached error:&error];
+        [bodyData appendData:filedata];
+        if(filedata.length < 1){
+            UUPLog(@"UUPItem 拼接文件 获取文件报错 error：%@",error.description);
+        }
+        [url stopAccessingSecurityScopedResource];
+        UUPLog(@"UUPItem 拼接文件 文件长度 length：%lu",(unsigned long)filedata.length);
+        filedata = nil;
+        
+        //(3)--Str--
+        NSString *endStr = [NSString stringWithFormat:@"\r\n--%@--\r\n",kBoundary];
+        NSData *endData = [endStr dataUsingEncoding:NSUTF8StringEncoding];
+        [bodyData appendData:endData];
+        
+        UUPLog(@"UUPItem 拼接文件 总长度 length：%lu",(unsigned long)bodyData.length);
+        
+        return bodyData;
     }
 }
 
 - (void)_finish{
     [self willChangeValueForKey:@"isFinished"];
-       _ismFinish = YES;
+    _ismFinish = YES;
     [self didChangeValueForKey:@"isFinished"];
-    if (self.mDelegate!=nil) {
-        if (self.mDelegate != nil && [self.mDelegate respondsToSelector:@selector(onUPFinish:)]) {
-            [self.mDelegate performSelector:@selector(onUPFinish:) withObject:self];
-        }
-    }
+    [self sendMessageType:RUN_FINISH];
     [[NSRunLoop mainRunLoop] cancelPerformSelectorsWithTarget:self];
     if(_mSpeedTimer != nil){
         [_mSpeedTimer invalidate];
@@ -354,14 +368,14 @@
                                                                             toFile:[NSURL fileURLWithPath:path]
                                                                            options:nil
                                                                  completionHandler:^(NSError * _Nullable error) {
-                                                                     __strong typeof(weakSelf)  strongSelf= weakSelf;
-                                                                     if (error) {
-                                                                         strongSelf.ismValidate = false;
-                                                                         strongSelf.mError = BAD_IO;
-                                                                     }else{
-                                                                         [strongSelf initAfter:path];
-                                                                     }
-                                                                 }];
+                    __strong typeof(weakSelf)  strongSelf= weakSelf;
+                    if (error) {
+                        strongSelf.ismValidate = false;
+                        strongSelf.mError = BAD_IO;
+                    }else{
+                        [strongSelf initAfter:path];
+                    }
+                }];
             }else{
                 _ismValidate = false;
                 self.mError = BAD_IO;
@@ -370,7 +384,7 @@
             [self initAfter:path];
         }
     }else{
-       [self initAfter:path];
+        [self initAfter:path];
     }
 }
 
@@ -406,21 +420,21 @@
 - (void)_check{
     if(self.mSliced == nil){
         __weak typeof(self) weakSelf = self;
-//        id obj = [UUPItemProxy proxyWithTarget:self];
+        //        id obj = [UUPItemProxy proxyWithTarget:self];
         UUPLogRetainCountO(@"UUPItem1",self)
         self.mSliced = [[UUPSliced alloc] initWith:weakSelf];
         UUPLogRetainCountO(@"UUPItem3",self)
     }
     if (self.mReceiver == nil) {
         __weak typeof(self) weakSelf = self;
-//        id obj = [UUPItemProxy proxyWithTarget:self];
+        //        id obj = [UUPItemProxy proxyWithTarget:self];
         UUPLogRetainCountO(@"UUPItem4",self)
         self.mReceiver = [[UUPReceiver alloc] initWith:weakSelf];
         UUPLogRetainCountO(@"UUPItem6",self)
     }
     if (self.mSession == nil) {
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-//        id obj = [UUPItemProxy proxyWithTarget:self.mReceiver];
+        //        id obj = [UUPItemProxy proxyWithTarget:self.mReceiver];
         self.mSession = [NSURLSession sessionWithConfiguration:config delegate:self.mReceiver delegateQueue:nil];
     }
     
@@ -434,11 +448,7 @@
         if(self.ismValidate) [self.mSliced makeSliced];
     }
     
-    if (self.mError != NONE) {
-        if (self.mDelegate != nil && [self.mDelegate respondsToSelector:@selector(onUPError:)]) {
-            [self.mDelegate performSelector:@selector(onUPError:) withObject:self];
-        }
-    }
+    [self sendMessageType:RUN_ERROR];
     _ismChecked = true;
 }
 
@@ -454,38 +464,40 @@
 
 - (void)_timerRun:(NSTimer*)timer{
     
-    if(timer.userInfo != nil){
+    if(timer.userInfo != nil && !_ismPaused){
         UUPItem *weakSelf = (UUPItem*)timer.userInfo;
         double tem = (weakSelf.mProgress - weakSelf.mLastProgress) * weakSelf.mSize;
         weakSelf.mSpeed = [[NSNumber numberWithDouble:tem] longValue];
         weakSelf.mSpeed = fabsl(weakSelf.mSpeed);
         weakSelf.mSpeedStr = [UUPUtil calculateSpeed:weakSelf.mSpeed];
         weakSelf.mLastProgress = weakSelf.mProgress;
-
-        UUPLog(@"UUPItem_timerRun:%@---%f---%f",weakSelf.mSpeedStr,weakSelf.mSpeed,tem);
-           
-        if(weakSelf.lowTimes >= 10){
+        
+        if(self.mProgress >= 1.0){
+            weakSelf.mSpeedStr = @"合成中";
+            weakSelf.lowTimes = 0;
+        }else if(weakSelf.lowTimes >= 10){
+            UUPLog(@"UUPItem_timerRun:%@---%f---%f",weakSelf.mSpeedStr,weakSelf.mSpeed,tem);
             weakSelf.mSpeedStr = [NSString stringWithFormat:@"网速缓慢 %@",weakSelf.mSpeedStr];
             if (weakSelf.lowTimes % 10 == 0 ) {
                 if(weakSelf.mError != LOW_NET){
                     weakSelf.mError = LOW_NET;
-                       [weakSelf sendMessageType:RUN_ERROR];
-                   }
-               }
-           }
-           
-        if(weakSelf.lowTimes < 10){
-            if(weakSelf.mError == LOW_NET){
-                weakSelf.mError = NONE;
-               }
-           }
-           
-        if (weakSelf.mSpeed < 10) {
-            weakSelf.lowTimes ++;
-           }else{
-               weakSelf.lowTimes = 0;
-           }
-           [weakSelf sendMessageType:RUN_PROSESS];
+                    [weakSelf sendMessageType:RUN_ERROR];
+                }
+            }
+            
+            if(weakSelf.lowTimes < 10){
+                if(weakSelf.mError == LOW_NET){
+                    weakSelf.mError = NONE;
+                }
+            }
+            
+            if (weakSelf.mSpeed < 10) {
+                weakSelf.lowTimes ++;
+            }else{
+                weakSelf.lowTimes = 0;
+            }
+        }
+        [weakSelf sendMessageType:RUN_PROSESS];
     }
 }
 

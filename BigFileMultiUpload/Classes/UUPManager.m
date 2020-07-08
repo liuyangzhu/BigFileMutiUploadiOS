@@ -11,6 +11,7 @@
 #import "UUPItf.h"
 #import "UUPItem+Protected.h"
 #import "UUPHeader.h"
+#import "UUPUtil.h"
 
 @interface UUPManager()<UUPItf>
 @property(nonatomic,assign) id<UUPItf> mDelegate;
@@ -43,6 +44,8 @@
         }
         [instance.mUploading cancelAllOperations];
     }
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
     instance.mConfig = nil;
     instance.mDelegate = nil;
 }
@@ -65,6 +68,9 @@
         }
         mTemp = nil;
     }
+    
+    //删除分片目录
+    [UUPUtil removeSlicedFile];
 }
 
 - (void)start:(UUPItem*)item immediately:(BOOL)immediately
@@ -130,6 +136,38 @@
     return delegate;
 }
 
+- (void)pause{
+    if(self.mUploading != nil && !self.mUploading.isSuspended){
+        UUPLog(@"UUPItem__pause");
+        dispatch_suspend(url_session_manager_creation_queue());
+        dispatch_suspend(url_session_manager_processing_queue());
+        [self.mUploading setSuspended:YES];
+        if (self.mUploading.operations.count > 0) {
+            NSArray<UUPItem*>* mTemp = self.mUploading.operations;
+            for (UUPItem* tItem in mTemp) {
+                if(!tItem.isFinished || tItem.isExecuting)[tItem pause];
+            }
+            mTemp = nil;
+        }
+    }
+}
+- (void)resume{
+    if(self.mUploading != nil && self.mUploading.isSuspended){
+        UUPLog(@"UUPItem__resume");
+        [self.mUploading setSuspended:NO];
+        dispatch_resume(url_session_manager_creation_queue());
+        dispatch_resume(url_session_manager_processing_queue());
+        if (self.mUploading.operations.count > 0) {
+            NSArray<UUPItem*>* mTemp = self.mUploading.operations;
+            for (UUPItem* tItem in mTemp) {
+                if(!tItem.isFinished || !tItem.isExecuting)[tItem resume];
+            }
+            mTemp = nil;
+        }
+        
+    }
+}
+
 ///
 + (instancetype)sharedSingleton {
     static UUPManager *_sharedInstance = nil;
@@ -139,6 +177,8 @@
         _sharedInstance.mRecords = [NSMutableDictionary<UUPItem*,id<UUPItf>> dictionaryWithCapacity:0];
         _sharedInstance.mUploading = [[NSOperationQueue alloc] init];
         _sharedInstance.mUploading.suspended = true;
+        [[NSNotificationCenter defaultCenter] addObserver:_sharedInstance selector:@selector(pause) name:UIApplicationWillResignActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:_sharedInstance selector:@selector(resume) name:UIApplicationDidBecomeActiveNotification object:nil];
     });
     return _sharedInstance;
 }

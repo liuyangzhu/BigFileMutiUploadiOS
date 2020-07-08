@@ -37,7 +37,7 @@
                 strongSelf.mItem.retryTimes = 0;
                 if(data != nil){
                     NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
-                                   UUPLog(@"UUPReceiver:%@",dic);
+                    UUPLog(@"UUPItem-onComplect:%@",dic);
                     
                     NSString *status = dic[@"status"];
                     status = status != nil ? status :@"FAIL";
@@ -48,19 +48,19 @@
                             case -1001:
                                 strongSelf.mItem.mError = BAD_ACCESS;
                                 break;
-                                case -1:
+                            case -1:
                                 strongSelf.mItem.mError = BAD_FUID;
                                 break;
-                                case 1000:
+                            case 1000:
                                 strongSelf.mItem.mError = BAD_ACCESS;
                                 break;
-                                case 1001:
+                            case 1001:
                                 strongSelf.mItem.mError = BAD_PARAMS;
                                 break;
-                                case 1002:
+                            case 1002:
                                 strongSelf.mItem.mError = BAD_FUID;
                                 break;
-                                case 1003:
+                            case 1003:
                                 strongSelf.mItem.mError = BAD_SLICED;
                                 break;
                             default:
@@ -72,7 +72,12 @@
                             strongSelf.mItem.mCurrentItem.isFinish = false;
                             strongSelf.mItem.mCurrentItem.mPProgress = 0.0;
                         }
-                        [strongSelf.mItem _preStart];
+                        if(strongSelf.mItem.mProgress >= 1.0){
+                            strongSelf.mItem.mError = BAD_MERGE;
+                            [strongSelf.mItem cancel];//合成文件失败
+                        }else{
+                            [strongSelf.mItem _preStart];
+                        }
                     }else{
                         //如果当前上传的分片上传成功继续下一分片
                         strongSelf.mItem.mError = NONE;
@@ -81,17 +86,21 @@
                             NSString *current_index = data[@"current_index"] != nil ? data[@"current_index"] : @"-1";
                             NSString *save_index = data[@"save_index"] != nil ? data[@"save_index"] : @"0";
                             NSString *file_path = data[@"file_path"];
-                            if([current_index isEqual:save_index] || file_path != nil){
+                           if([current_index isEqual:save_index] || file_path != nil){
                                 strongSelf.mItem.mCurrentItem.isFinish = true;
                                 strongSelf.mItem.mPProgress += strongSelf.mItem.mCurrentItem.mProgress;
                                 if(file_path != nil)strongSelf.mItem.mRemoteUri = file_path;
                                 [strongSelf.mItem.mSliced clean:strongSelf.mItem.mCurrentItem];
+                                [strongSelf.mItem _preStart];
                             }else{
                                 if(strongSelf.mItem.mCurrentItem!=nil){
                                     strongSelf.mItem.mCurrentItem.isSuspend = false;
                                     strongSelf.mItem.mCurrentItem.isFinish = false;
                                     strongSelf.mItem.mCurrentItem.mPProgress = 0.0;
                                 }
+                                strongSelf.mItem.mProgress = 1.0;
+                                strongSelf.mItem.mError = BAD_MERGE;
+                                [strongSelf.mItem cancel];//合成文件失败
                             }
                         }else{
                             if(strongSelf.mItem.mCurrentItem!=nil){
@@ -99,11 +108,10 @@
                                 strongSelf.mItem.mCurrentItem.isFinish = false;
                                 strongSelf.mItem.mCurrentItem.mPProgress = 0.0;
                             }
+                            [strongSelf.mItem _preStart];
                         }
-                        [strongSelf.mItem _preStart];
                     }
-                    
-                    UUPLog(@"UUPReceiver_msg:%@",dic[@"msg"]);
+                    UUPLog(@"UUPItem-onComplect:%@",dic[@"msg"]);
                 }else{
                     if(strongSelf.mItem.mCurrentItem!=nil){
                         strongSelf.mItem.mCurrentItem.isSuspend = false;
@@ -140,7 +148,7 @@
                 strongSelf.mItem.retryTimes = 0;
                 if(data != nil){
                     NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
-                                   UUPLog(@"UUPReceiver:%@",dic);
+                    UUPLog(@"UUPItem-onComplect-fuid:%@",dic);
                     
                     NSString *status = dic[@"status"];
                     status = status != nil ? status :@"FAIL";
@@ -151,19 +159,19 @@
                             case -1001:
                                 strongSelf.mItem.mError = BAD_ACCESS;
                                 break;
-                                case -2:
+                            case -2:
                                 strongSelf.mItem.mError = BAD_FUID;
                                 break;
-                                case 1000:
+                            case 1000:
                                 strongSelf.mItem.mError = BAD_ACCESS;
                                 break;
-                                case 1001:
+                            case 1001:
                                 strongSelf.mItem.mError = BAD_PARAMS;
                                 break;
-                                case 1002:
+                            case 1002:
                                 strongSelf.mItem.mError = BAD_FUID;
                                 break;
-                                case 1003:
+                            case 1003:
                                 strongSelf.mItem.mError = BAD_SLICED;
                                 break;
                             default:
@@ -190,14 +198,14 @@
                         }
                     }
                     
-                    UUPLog(@"UUPReceiver_msg:%@",dic[@"msg"]);
+                    UUPLog(@"UUPItem-onComplect-fuid:%@",dic[@"msg"]);
                 }else{
                     if(strongSelf.mItem.mCurrentItem!=nil){
                         strongSelf.mItem.mCurrentItem.isSuspend = false;
                         strongSelf.mItem.mCurrentItem.isFinish = false;
                         strongSelf.mItem.mCurrentItem.mPProgress = 0.0;
                     }
-                
+                    
                     [strongSelf.mItem _preStart];
                 }
             }else{

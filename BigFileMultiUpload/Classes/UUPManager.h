@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)destory:(id<UUPItf>)delegate;
 - (void)cancel:(UUPItem*)item;
 - (void)start:(UUPItem*)item immediately:(BOOL)immediately;
+- (void)pause;
+- (void)resume;
 @end
 
 NS_ASSUME_NONNULL_END

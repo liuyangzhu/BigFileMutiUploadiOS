@@ -32,7 +32,7 @@
         if (item != nil) {
             _mPath = item.mFilePath;
             NSString *file = [item.mUploadFileName stringByReplacingOccurrencesOfString:@"." withString:@"~"];
-            _mTempRoot = [NSTemporaryDirectory() stringByAppendingPathComponent:file];
+            _mTempRoot = [SLICED_PATH stringByAppendingPathComponent:file];//放在tmp目录是不安全的，因为切到后台后会清楚
             [UUPUtil isFilesExist:_mTempRoot file:true];
             if (item.mConfig != nil) {
                 _mConfig = item.mConfig;
@@ -74,8 +74,15 @@
             [readHandle seekToFileOffset:buffer * (i-1)];
             NSData *data = [readHandle readDataOfLength:buffer];
             NSString *path = [_mTempRoot stringByAppendingFormat:@"/%ld.%@",i,ext];
+            NSURL *fileURL = [NSURL fileURLWithPath:path];
+            [data writeToURL:fileURL options:NSDataWritingWithoutOverwriting error:nil];
+            [fileURL setResourceValue:@(YES) forKey: NSURLIsExecutableKey error:nil];
+            [fileURL setResourceValue:@(YES) forKey: NSURLIsWritableKey error:nil];
+            [fileURL setResourceValue:@(YES) forKey: NSURLIsReadableKey error:nil];
+            [fileURL setResourceValue:@(YES) forKey: NSURLIsExcludedFromBackupKey error:nil];
+            [fileURL setResourceValue:NSFileProtectionNone forKey:NSURLFileProtectionKey error:nil];
+            
             UUPLog(@"UUPSliced_path:%@",path);
-            [data writeToFile:path atomically:true];
             UUPSlicedItem *sItem = [[UUPSlicedItem alloc] init];
             sItem.mSlicedFile = path;
             sItem.mSlicedIndex = i;

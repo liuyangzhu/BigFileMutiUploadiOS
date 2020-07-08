@@ -168,6 +168,7 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
     } else if (CNChooseMediaTypeTakePhoto == mediaType) {
         __weak typeof(self) weakSelf = self;
         UIImage *image = [info valueForKey:UIImagePickerControllerOriginalImage];
+        PHAssetResourceManager *mana = [PHAssetResourceManager defaultManager];
         ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
         [assetsLibrary writeImageDataToSavedPhotosAlbum:UIImageJPEGRepresentation(image,(CGFloat)1.0) metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
             if (!error) {

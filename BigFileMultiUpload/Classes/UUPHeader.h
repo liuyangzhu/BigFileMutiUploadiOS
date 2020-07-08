@@ -17,6 +17,8 @@
 #define UUPLogRetainCount(args)  UUPLog(@"%@ Retain count is %ld",((args)), CFGetRetainCount((__bridge CFTypeRef)self));
 #define UUPLogRetainCountO(args,X)  UUPLog(@"%@ Retain count is %ld",((args)),CFGetRetainCount((__bridge CFTypeRef)((X))));
 
+#define SLICED_PATH [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0] stringByAppendingPathComponent:@"Sliced"]
+
 #endif /* UUPHeader_h */
 
 #ifndef NSFoundationVersionNumber_iOS_8_0

@@ -6,7 +6,8 @@
 //
 
 #import "UUPUtil.h"
- #import <MobileCoreServices/MobileCoreServices.h>
+#import <MobileCoreServices/MobileCoreServices.h>
+#import "UUPHeader.h"
 
 @implementation UUPUtil
 + (NSString*)getMimeType:(NSString*)path{
@@ -25,7 +26,7 @@
 + (void)isFilesExist:(NSString*)file file:(BOOL)direct{
     NSFileManager *manager = [NSFileManager defaultManager];
     if(![manager fileExistsAtPath:file]){
-        [manager createDirectoryAtPath:file withIntermediateDirectories:direct attributes:nil error:nil];
+        [manager createDirectoryAtPath:file withIntermediateDirectories:direct attributes:@{NSURLIsExcludedFromBackupKey:@(YES),NSURLFileProtectionKey:NSFileProtectionNone,NSURLIsExecutableKey:@(YES),NSURLIsWritableKey:@(YES),NSURLIsReadableKey:@(YES)} error:nil];
     }
 }
 + (NSString*)randomName{
@@ -69,6 +70,15 @@
 }
 + (BOOL)isNetworkConnected{
     return true;
+}
+
++ (void)removeSlicedFile{
+    NSFileManager *manager = [NSFileManager defaultManager];
+    if (![manager fileExistsAtPath:SLICED_PATH]) {
+        NSError *error = nil;
+        [manager removeItemAtPath:SLICED_PATH error:&error];
+        if(error != nil)error=nil;
+    }
 }
 
 @end

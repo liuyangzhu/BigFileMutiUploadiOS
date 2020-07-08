@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWith:(NSURL*)path type:(UUPItemType)type;
 - (void)start;
 - (void)pause;
+- (void)resume;
 - (void)cancel;
 @end
 
