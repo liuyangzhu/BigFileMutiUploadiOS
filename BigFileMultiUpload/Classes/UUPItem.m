@@ -42,6 +42,7 @@
 @property(nonatomic,strong) NSURLSessionTask* mTask;
 @property(nonatomic,strong) UUPReceiver* mReceiver;
 @property(nonatomic,assign) id<UUPItf> mDelegate;
+@property(nonatomic,assign) BOOL isHasNextRequest;
 
 @end
 
@@ -176,6 +177,10 @@
                        if(strongSelf.mTask != nil && strongSelf.mTask.state == NSURLSessionTaskStateSuspended){
                            [strongSelf.mTask resume];
                            [strongSelf _calculateSpeed];
+                       }else if(strongSelf.mTask != nil && strongSelf.mTask.state != NSURLSessionTaskStateCompleted){
+                           //等待这次请求发送完
+                       }else if(strongSelf.isHasNextRequest){
+                           //等待这次请求发送完
                        }else if(strongSelf.mFUID == nil){//不作处理
                            [strongSelf _getFuid];
                        }else{
@@ -191,6 +196,7 @@
     __weak typeof(self) weakSelf = self;
     url_session_manager_create_task_safely(^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
+        strongSelf.isHasNextRequest = true;
         NSString *requestURL = strongSelf.mConfig.fuidURi;
         if(strongSelf.mFUID != nil && strongSelf.mFUID.length > 0){
             requestURL = [requestURL stringByAppendingFormat:@"?fuid=%@&total=%ld",strongSelf.mFUID,strongSelf.mSliced.mTotalSliced];
@@ -202,12 +208,14 @@
         [request setValue:self.mConfig.deviceToken forHTTPHeaderField:@"Device-Token"];
         strongSelf.mTask = [strongSelf.mSession dataTaskWithRequest:request completionHandler:strongSelf.mReceiver.completionFuidHandler];
         [strongSelf.mTask resume];
+        strongSelf.isHasNextRequest = false;
     });
 }
 - (void)_next{
     __weak typeof(self) weakSelf = self;
     url_session_manager_create_task_safely(^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
+        strongSelf.isHasNextRequest = true;
         strongSelf.mCurrentItem = [strongSelf.mSliced nextSliced];//获取下一片
         if(strongSelf.mCurrentItem != nil){//下一片不为空
             strongSelf.mCurrentItem.isSuspend = true;//挂起状态
@@ -232,6 +240,7 @@
         }else{
             [strongSelf _finish];
         }
+        strongSelf.isHasNextRequest = false;
     });
 }
 

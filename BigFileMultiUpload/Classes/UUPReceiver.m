@@ -83,16 +83,23 @@
                         strongSelf.mItem.mError = NONE;
                         NSDictionary *data = dic[@"data"];
                         if(data != nil){
-                            NSString *current_index = data[@"current_index"] != nil ? data[@"current_index"] : @"-1";
+                            NSString *total_index = data[@"total_index"] != nil ? data[@"total_index"] : @"-1";
                             NSString *save_index = data[@"save_index"] != nil ? data[@"save_index"] : @"0";
+                            NSString *finalFileName = data[@"finalFileName"];
                             NSString *file_path = data[@"file_path"];
-                           if([current_index isEqual:save_index] || file_path != nil){
+                           if([total_index isEqual:save_index] && file_path != nil){
                                 strongSelf.mItem.mCurrentItem.isFinish = true;
                                 strongSelf.mItem.mPProgress += strongSelf.mItem.mCurrentItem.mProgress;
                                 if(file_path != nil)strongSelf.mItem.mRemoteUri = file_path;
                                 [strongSelf.mItem.mSliced clean:strongSelf.mItem.mCurrentItem];
                                 [strongSelf.mItem _preStart];
-                            }else{
+                           }else if( finalFileName != nil && ![@"<null>" isEqual:finalFileName]){
+                               strongSelf.mItem.mCurrentItem.isFinish = true;
+                               strongSelf.mItem.mPProgress += strongSelf.mItem.mCurrentItem.mProgress;
+                               if(file_path != nil)strongSelf.mItem.mRemoteUri = file_path;
+                               [strongSelf.mItem.mSliced clean:strongSelf.mItem.mCurrentItem];
+                               [strongSelf.mItem _preStart];
+                           }else{
                                 if(strongSelf.mItem.mCurrentItem!=nil){
                                     strongSelf.mItem.mCurrentItem.isSuspend = false;
                                     strongSelf.mItem.mCurrentItem.isFinish = false;
