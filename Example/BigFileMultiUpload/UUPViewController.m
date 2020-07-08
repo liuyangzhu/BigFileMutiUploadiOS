@@ -209,10 +209,10 @@ typedef NS_ENUM(NSUInteger, CNChooseMediaType) {
 }
 - (nonnull UUPConfig *)onConfigure {
     UUPConfig *config = [[UUPConfig alloc] init];
-    config.authSign = @"N2VmYWxlY21peHhUd3ovNG44cWhJSkhtN0tWeTN5bDk5R3pKTGtueHBWYTJ2bTJ5c0ZSZzNQVyszdmtCRFJlcUJ4TEF0ZG1UcUtIbldkenNVY0tmZWtSWUNuQ1VFVDdpRmgvNUZVUmpqWEhCaFN4ejBhTXJ3Y2JodnFqdzgvMFNpUlBUbVYzQTBDU0NLbmJSZGNoclh4dnd0bE9TUDk3clc4ejhObXlJakNxb2tMZjN3eXNMMTdFdTJTOEJBcUtYRW9zRkJxNUZOZE9YRnNIc3dJbVB2TDg3WmdTd1BkWmJMbjkwbmdOSzZmUlF6d1RqYTNIOEs0a3B2aTh1empQQUpsckw=";
+    config.authSign = @"";
     config.deviceToken = config.authSign;
-    config.serverURi = @"https://upload.newscctv.net/2.64/ugc/chunk_upload.php";
-    config.fuidURi = @"https://upload.newscctv.net/2.64/ugc/init_chunk_upload.php";
+    config.serverURi = @"";
+    config.fuidURi = @"";
     return config;
 }
 - (void)onUPStart:(nonnull UUPItem *)item {
