@@ -133,6 +133,8 @@
 		AA446FE024AD764C00182DFD /* UUPItemProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = AA446FDC24AD764C00182DFD /* UUPItemProxy.h */; };
 		AA446FE124AD764C00182DFD /* UUPItem+Protected.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FDD24AD764C00182DFD /* UUPItem+Protected.m */; };
 		AA446FE224AD764C00182DFD /* UUPItemProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = AA446FDE24AD764C00182DFD /* UUPItemProxy.m */; };
+		AA44712424B6BB5800182DFD /* UUPNetworkRM.h in Headers */ = {isa = PBXBuildFile; fileRef = AA44712224B6BB5800182DFD /* UUPNetworkRM.h */; };
+		AA44712524B6BB5800182DFD /* UUPNetworkRM.m in Sources */ = {isa = PBXBuildFile; fileRef = AA44712324B6BB5800182DFD /* UUPNetworkRM.m */; };
 		ACBDE7479CEDFD9F3261E26D6B1015FC /* EXPMatchers+haveCountOf.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B587F705BFFCCBD0E65FA3DAF35FA1D /* EXPMatchers+haveCountOf.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AD96736DFA1A1A28B31F13E7818FCFE2 /* UIImage+Snapshot.h in Headers */ = {isa = PBXBuildFile; fileRef = E19D7F91877074DF27F99640EC532352 /* UIImage+Snapshot.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		ADC88A4EE6896AE4E6412F0128AB38C5 /* SPTExampleGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = F094E0D0E122398BEE05F02377D96CC1 /* SPTExampleGroup.m */; };
@@ -397,6 +399,8 @@
 		AA446FDC24AD764C00182DFD /* UUPItemProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UUPItemProxy.h; path = BigFileMultiUpload/Classes/UUPItemProxy.h; sourceTree = "<group>"; };
 		AA446FDD24AD764C00182DFD /* UUPItem+Protected.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UUPItem+Protected.m"; path = "BigFileMultiUpload/Classes/UUPItem+Protected.m"; sourceTree = "<group>"; };
 		AA446FDE24AD764C00182DFD /* UUPItemProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UUPItemProxy.m; path = BigFileMultiUpload/Classes/UUPItemProxy.m; sourceTree = "<group>"; };
+		AA44712224B6BB5800182DFD /* UUPNetworkRM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UUPNetworkRM.h; path = BigFileMultiUpload/Classes/UUPNetworkRM.h; sourceTree = "<group>"; };
+		AA44712324B6BB5800182DFD /* UUPNetworkRM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UUPNetworkRM.m; path = BigFileMultiUpload/Classes/UUPNetworkRM.m; sourceTree = "<group>"; };
 		AC81CDCDA674C72343F33170829E3264 /* ExpectaObject+FBSnapshotTest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ExpectaObject+FBSnapshotTest.m"; sourceTree = "<group>"; };
 		ACF27369267FC1FE4138662A11DF8F47 /* Expecta.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Expecta.release.xcconfig; sourceTree = "<group>"; };
 		ADB8A0F0B2B83940D30D63AF2BDBA119 /* EXPBlockDefinedMatcher.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXPBlockDefinedMatcher.m; path = Expecta/EXPBlockDefinedMatcher.m; sourceTree = "<group>"; };
@@ -861,6 +865,8 @@
 				AA446FDD24AD764C00182DFD /* UUPItem+Protected.m */,
 				AA446FDC24AD764C00182DFD /* UUPItemProxy.h */,
 				AA446FDE24AD764C00182DFD /* UUPItemProxy.m */,
+				AA44712224B6BB5800182DFD /* UUPNetworkRM.h */,
+				AA44712324B6BB5800182DFD /* UUPNetworkRM.m */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -1030,6 +1036,7 @@
 				AA446FC024A5E2AE00182DFD /* UUPItem.h in Headers */,
 				AA446FDF24AD764C00182DFD /* UUPItem+Protected.h in Headers */,
 				AA446FE024AD764C00182DFD /* UUPItemProxy.h in Headers */,
+				AA44712424B6BB5800182DFD /* UUPNetworkRM.h in Headers */,
 				AA446FC924A5E36200182DFD /* UUPItemType.h in Headers */,
 				AA446FB824A5E2AE00182DFD /* UUPConfig.h in Headers */,
 				AA446FC624A5E2AE00182DFD /* UUPManager.h in Headers */,
@@ -1291,6 +1298,7 @@
 				AA446FC324A5E2AE00182DFD /* UUPItem.m in Sources */,
 				AA446FB624A5E2AE00182DFD /* UUPSlicedItem.m in Sources */,
 				AA446FE124AD764C00182DFD /* UUPItem+Protected.m in Sources */,
+				AA44712524B6BB5800182DFD /* UUPNetworkRM.m in Sources */,
 				AA446FE224AD764C00182DFD /* UUPItemProxy.m in Sources */,
 				AA446FC224A5E2AE00182DFD /* UUPSliced.m in Sources */,
 				AA446FC524A5E2AE00182DFD /* UUPUtil.m in Sources */,

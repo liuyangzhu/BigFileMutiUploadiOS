@@ -12,11 +12,14 @@
 #import "UUPItem+Protected.h"
 #import "UUPHeader.h"
 #import "UUPUtil.h"
+#import "UUPNetworkRM.h"
 
 @interface UUPManager()<UUPItf>
 @property(nonatomic,assign) id<UUPItf> mDelegate;
 @property(nonatomic,strong) UUPConfig* mConfig;
 @property(nonatomic,strong) NSOperationQueue* mUploading;
+@property(nonatomic,strong) UUPNetworkRM* _RMmanager;
+@property(nonatomic,assign) BOOL isForeground;
 @property(nonatomic,strong) NSMutableDictionary<UUPItem*,id<UUPItf>>* mRecords;
 @end
 
@@ -44,8 +47,10 @@
         }
         [instance.mUploading cancelAllOperations];
     }
+    [instance._RMmanager stopMonitoring];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UUPNetworkRMDidChangeNotification object:nil];
     instance.mConfig = nil;
     instance.mDelegate = nil;
 }
@@ -137,6 +142,7 @@
 }
 
 - (void)pause{
+    self.isForeground = false;
     if(self.mUploading != nil && !self.mUploading.isSuspended){
         UUPLog(@"UUPItem__pause");
         dispatch_suspend(url_session_manager_creation_queue());
@@ -152,7 +158,8 @@
     }
 }
 - (void)resume{
-    if(self.mUploading != nil && self.mUploading.isSuspended){
+    self.isForeground = true;
+    if(self.mUploading != nil && self.mUploading.isSuspended && self._RMmanager.isReachable){
         UUPLog(@"UUPItem__resume");
         [self.mUploading setSuspended:NO];
         dispatch_resume(url_session_manager_creation_queue());
@@ -168,6 +175,24 @@
     }
 }
 
+- (void)currentNetState:(NSNotification*)noti{
+    if (!self._RMmanager.isReachable) {
+        [self pause];
+        UIAlertController *alertV = [UIAlertController alertControllerWithTitle:@"提示" message:@"网络断开，请检查网络" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *action2 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleCancel handler:nil];
+        [alertV addAction:action2];
+        UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+        [vc presentViewController:alertV animated:YES completion:NULL];
+        vc = nil;
+    }else{
+        __weak typeof(self) weakSelf = self;
+        url_session_manager_processing_task_safely(^{
+            __strong typeof(weakSelf)  strongSelf = weakSelf;
+            if(strongSelf.isForeground)[strongSelf resume];
+        });
+    }
+}
+
 ///
 + (instancetype)sharedSingleton {
     static UUPManager *_sharedInstance = nil;
@@ -179,6 +204,10 @@
         _sharedInstance.mUploading.suspended = true;
         [[NSNotificationCenter defaultCenter] addObserver:_sharedInstance selector:@selector(pause) name:UIApplicationWillResignActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:_sharedInstance selector:@selector(resume) name:UIApplicationDidBecomeActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:_sharedInstance selector:@selector(currentNetState:) name:UUPNetworkRMDidChangeNotification object:nil];
+        _sharedInstance._RMmanager = [UUPNetworkRM manager];
+        [_sharedInstance._RMmanager startMonitoring];
+        
     });
     return _sharedInstance;
 }

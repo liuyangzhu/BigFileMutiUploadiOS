@@ -12,6 +12,7 @@
 #import "UUPConfig.h"
 #import "UUPSlicedItem.h"
 #import "UUPItem+Protected.h"
+#import "UUPNetworkRM.h"
 
 @interface  UUPReceiver()
 @property(nonatomic,weak) UUPItem* mItem;
@@ -128,22 +129,24 @@
                     [strongSelf.mItem _preStart];
                 }
             }else{
-                if (error.code >= 400){
-                    strongSelf.mItem.mError = BAD_NET;
-                }else{
-                    strongSelf.mItem.mError = LOW_NET;
-                }
+                strongSelf.mItem.mError = BAD_NET;
                 if(strongSelf.mItem.mCurrentItem!=nil){
                     strongSelf.mItem.mCurrentItem.isSuspend = false;
                     strongSelf.mItem.mCurrentItem.isFinish = false;
                     strongSelf.mItem.mCurrentItem.mPProgress = 0.0;
                 }
-                if(strongSelf.mItem.retryTimes < strongSelf.mItem.mConfig.retryTimes){
-                    strongSelf.mItem.retryTimes++;
-                    [strongSelf.mItem _preStart];
+                
+                if([[UUPNetworkRM manager] isReachable]){
+                    if(strongSelf.mItem.retryTimes < strongSelf.mItem.mConfig.retryTimes){
+                        strongSelf.mItem.retryTimes++;
+                        [strongSelf.mItem _preStart];
+                    }else{
+                        [strongSelf.mItem pause];
+                    }
                 }else{
-                    [strongSelf.mItem cancel];
+                    
                 }
+    
             }
         });
     };
@@ -216,16 +219,12 @@
                     [strongSelf.mItem _preStart];
                 }
             }else{
-                if (error.code >= 400){
-                    strongSelf.mItem.mError = BAD_NET;
-                }else{
-                    strongSelf.mItem.mError = LOW_NET;
-                }
-                if(strongSelf.mItem.retryTimes < strongSelf.mItem.mConfig.retryTimes){
+                strongSelf.mItem.mError = BAD_NET;
+                if(strongSelf.mItem.retryTimes < strongSelf.mItem.mConfig.retryTimes && [UUPNetworkRM manager].reachable){
                     strongSelf.mItem.retryTimes++;
                     [strongSelf.mItem _getFuid];
                 }else{
-                    [strongSelf.mItem cancel];
+                    [strongSelf.mItem pause];
                 }
             }
         });
